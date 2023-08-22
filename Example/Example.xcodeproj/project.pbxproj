@@ -26,7 +26,6 @@
 		985A2D7A282A85B5007AE0C6 /* BLANCH_CONDENSED.otf in Resources */ = {isa = PBXBuildFile; fileRef = 985A2D67282A85B5007AE0C6 /* BLANCH_CONDENSED.otf */; };
 		985A2D7B282A85B5007AE0C6 /* vevey.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 985A2D68282A85B5007AE0C6 /* vevey.ttf */; };
 		985A2D7C282A85B5007AE0C6 /* Arvil_Sans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 985A2D69282A85B5007AE0C6 /* Arvil_Sans.ttf */; };
-		985A2D7E282A8BC5007AE0C6 /* FontChooserContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 985A2D7D282A8BC5007AE0C6 /* FontChooserContainerView.swift */; };
 		E4020928256BA9D70077F5DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4020927256BA9D70077F5DC /* AppDelegate.swift */; };
 		E402092C256BA9D70077F5DC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E402092B256BA9D70077F5DC /* ViewController.swift */; };
 		E402092F256BA9D70077F5DC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E402092D256BA9D70077F5DC /* Main.storyboard */; };
@@ -71,8 +70,6 @@
 		E4020989256BAA420077F5DC /* ConstraintMakerRelatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4020964256BAA420077F5DC /* ConstraintMakerRelatable.swift */; };
 		E402098F256BAC560077F5DC /* ZLImageEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E402098E256BAC560077F5DC /* ZLImageEditor.framework */; };
 		E4020990256BAC560077F5DC /* ZLImageEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E402098E256BAC560077F5DC /* ZLImageEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E4020999256BB2480077F5DC /* ImageStickerContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4020998256BB2480077F5DC /* ImageStickerContainerView.swift */; };
-		E4CAF827256CACE800C7B04E /* CustomFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CAF826256CACE800C7B04E /* CustomFilter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -109,7 +106,6 @@
 		985A2D67282A85B5007AE0C6 /* BLANCH_CONDENSED.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = BLANCH_CONDENSED.otf; sourceTree = "<group>"; };
 		985A2D68282A85B5007AE0C6 /* vevey.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = vevey.ttf; sourceTree = "<group>"; };
 		985A2D69282A85B5007AE0C6 /* Arvil_Sans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Arvil_Sans.ttf; sourceTree = "<group>"; };
-		985A2D7D282A8BC5007AE0C6 /* FontChooserContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontChooserContainerView.swift; sourceTree = "<group>"; };
 		E4020924256BA9D70077F5DC /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4020927256BA9D70077F5DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E402092B256BA9D70077F5DC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -156,8 +152,6 @@
 		E4020963256BAA420077F5DC /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
 		E4020964256BAA420077F5DC /* ConstraintMakerRelatable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConstraintMakerRelatable.swift; sourceTree = "<group>"; };
 		E402098E256BAC560077F5DC /* ZLImageEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ZLImageEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		E4020998256BB2480077F5DC /* ImageStickerContainerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageStickerContainerView.swift; sourceTree = "<group>"; };
-		E4CAF826256CACE800C7B04E /* CustomFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomFilter.swift; sourceTree = "<group>"; };
 		FD88C1F628C739C100C0C0F2 /* Example-bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Example-bridge.h"; sourceTree = "<group>"; };
 		FDB3113528756E8100845756 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		FDB3113728756E8A00845756 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
@@ -237,9 +231,6 @@
 				E402093E256BAA420077F5DC /* SnapKit */,
 				E4020927256BA9D70077F5DC /* AppDelegate.swift */,
 				E402092B256BA9D70077F5DC /* ViewController.swift */,
-				E4020998256BB2480077F5DC /* ImageStickerContainerView.swift */,
-				985A2D7D282A8BC5007AE0C6 /* FontChooserContainerView.swift */,
-				E4CAF826256CACE800C7B04E /* CustomFilter.swift */,
 				FD88C1F628C739C100C0C0F2 /* Example-bridge.h */,
 				E402092D256BA9D70077F5DC /* Main.storyboard */,
 				E4020930256BA9D90077F5DC /* Assets.xcassets */,
@@ -407,7 +398,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				E402097E256BAA420077F5DC /* ConstraintRelation.swift in Sources */,
-				E4CAF827256CACE800C7B04E /* CustomFilter.swift in Sources */,
 				E402097C256BAA420077F5DC /* ConstraintMakerEditable.swift in Sources */,
 				E4020989256BAA420077F5DC /* ConstraintMakerRelatable.swift in Sources */,
 				E4020968256BAA420077F5DC /* ConstraintMakerPriortizable.swift in Sources */,
@@ -431,11 +421,9 @@
 				E4020973256BAA420077F5DC /* ConstraintMakerRelatable+Extensions.swift in Sources */,
 				E4020982256BAA420077F5DC /* Constraint.swift in Sources */,
 				E4020976256BAA420077F5DC /* ConstraintView.swift in Sources */,
-				E4020999256BB2480077F5DC /* ImageStickerContainerView.swift in Sources */,
 				E402096C256BAA420077F5DC /* ConstraintInsets.swift in Sources */,
 				E4020975256BAA420077F5DC /* UILayoutSupport+Extensions.swift in Sources */,
 				E4020928256BA9D70077F5DC /* AppDelegate.swift in Sources */,
-				985A2D7E282A8BC5007AE0C6 /* FontChooserContainerView.swift in Sources */,
 				E4020987256BAA420077F5DC /* ConstraintDirectionalInsets.swift in Sources */,
 				E402096B256BAA420077F5DC /* ConstraintPriorityTarget.swift in Sources */,
 				E402097A256BAA420077F5DC /* ConstraintConstantTarget.swift in Sources */,

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "zl_revoke@3x.png",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

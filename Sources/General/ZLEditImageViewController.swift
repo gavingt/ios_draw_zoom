@@ -75,8 +75,8 @@ open class ZLEditImageViewController: UIViewController {
     open lazy var undoBtn: UIButton = {
         let btn = UIButton(type: .custom)
 
-        btn.setImage(UIImage(named: "zl_revoke_disable", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .disabled)
-        btn.setImage(UIImage(named: "zl_revoke", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .normal)
+        btn.setImage(UIImage(named: "zl_revoke_disable"), for: .disabled)
+        btn.setImage(UIImage(named: "zl_revoke"), for: .normal)
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
         btn.addTarget(self, action: #selector(undoBtnClick), for: .touchUpInside)
@@ -85,8 +85,8 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var redoBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.setImage(UIImage(named: "zl_redo_disable", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .disabled)
-        btn.setImage(UIImage(named: "zl_redo", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .normal)
+        btn.setImage(UIImage(named: "zl_redo_disable"), for: .disabled)
+        btn.setImage(UIImage(named: "zl_redo"), for: .normal)
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
         btn.addTarget(self, action: #selector(redoBtnClick), for: .touchUpInside)
@@ -119,13 +119,13 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
-    @objc public class func showEditImageVC(parentVC: UIViewController?, animate: Bool = true, image: UIImage, editModel: ZLEditImageModel? = nil, completion: ((UIImage, ZLEditImageModel?) -> Void)?) {
+    @objc public class func showEditImageVC(parentVC: UIViewController?, image: UIImage, editModel: ZLEditImageModel? = nil, completion: ((UIImage, ZLEditImageModel?) -> Void)?) {
         let vc = ZLEditImageViewController(image: image, editModel: editModel)
         vc.editFinishBlock = { ei, editImageModel in
             completion?(ei, editImageModel)
         }
         vc.modalPresentationStyle = .fullScreen
-        parentVC?.present(vc, animated: animate, completion: nil)
+        parentVC?.present(vc, animated: true, completion: nil)
     }
 
     @objc public init(image: UIImage, editModel: ZLEditImageModel? = nil) {
@@ -168,7 +168,7 @@ open class ZLEditImageViewController: UIViewController {
         doneBtn.frame = CGRect(x: 20, y: 83, width: view.frame.width - 40, height: 40)
 
         if !drawPaths.isEmpty {
-            drawLine()
+            drawAllLines()
         }
     }
 
@@ -190,14 +190,7 @@ open class ZLEditImageViewController: UIViewController {
         containerView.frame = CGRect(x: max(0, (scrollViewSize.width - w) / 2), y: max(0, (scrollViewSize.height - h) / 2), width: w, height: h)
         mainScrollView.contentSize = containerView.frame.size
 
-/*        if selectRatio?.isCircle == true {
-            let mask = CAShapeLayer()
-            let path = UIBezierPath(arcCenter: CGPoint(x: w / 2, y: h / 2), radius: w / 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
-            mask.path = path.cgPath
-            containerView.layer.mask = mask
-        } else {*/
-            containerView.layer.mask = nil
-        //}
+        containerView.layer.mask = nil
 
         let scaleImageOrigin = CGPoint(x: -editRect.origin.x * ratio, y: -editRect.origin.y * ratio)
         let scaleImageSize = CGSize(width: imageSize.width * ratio, height: imageSize.height * ratio)
@@ -266,15 +259,10 @@ open class ZLEditImageViewController: UIViewController {
         var editModel: ZLEditImageModel?
         if hasEdit {
             autoreleasepool {
-//                let hud = ZLProgressHUD(style: .dark)
-//                hud.show()
-
                 resImage = buildImage()
                 if let oriDataSize = originalImage.jpegData(compressionQuality: 1)?.count {
                     resImage = resImage.zl.compress(to: oriDataSize)
                 }
-
-                //hud.hide()
             }
 
             editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle/*, selectRatio: selectRatio*/)
@@ -291,7 +279,7 @@ open class ZLEditImageViewController: UIViewController {
         drawPaths.removeLast()
         undoBtn.isEnabled = !drawPaths.isEmpty
         redoBtn.isEnabled = drawPaths.count != redoDrawPaths.count
-        drawLine()
+        drawAllLines()
     }
 
 
@@ -301,7 +289,7 @@ open class ZLEditImageViewController: UIViewController {
         drawPaths.append(path)
         undoBtn.isEnabled = !drawPaths.isEmpty
         redoBtn.isEnabled = drawPaths.count != redoDrawPaths.count
-        drawLine()
+        drawAllLines()
     }
 
 
@@ -329,13 +317,13 @@ open class ZLEditImageViewController: UIViewController {
                 toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
             }
 
-            let path = ZLDrawPath(pathColor: currentDrawColor, pathWidth: drawLineWidth/* / mainScrollView.zoomScale*/, ratio: ratio / originalRatio / toImageScale, startPoint: point)
+            let path = ZLDrawPath(pathColor: currentDrawColor, pathWidth: drawLineWidth, ratio: ratio / originalRatio / toImageScale, startPoint: point)
             drawPaths.append(path)
             redoDrawPaths = drawPaths
         } else if pan.state == .changed {
             let path = drawPaths.last
             path?.addLine(to: point)
-            drawLine()
+            drawAllLines()
         } else if pan.state == .cancelled || pan.state == .ended {
             undoBtn.isEnabled = !drawPaths.isEmpty
             redoBtn.isEnabled = false
@@ -343,7 +331,7 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
-    func drawLine() {
+    func drawAllLines() {
         let originalRatio = min(mainScrollView.frame.width / originalImage.size.width, mainScrollView.frame.height / originalImage.size.height)
         let ratio = min(mainScrollView.frame.width / editRect.width, mainScrollView.frame.height / editRect.height)
         let scale = ratio / originalRatio
