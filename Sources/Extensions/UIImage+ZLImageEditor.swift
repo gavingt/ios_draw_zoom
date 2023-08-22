@@ -362,26 +362,6 @@ extension ZLImageEditorWrapper where Base: UIImage {
     }
 }
 
-extension ZLImageEditorWrapper where Base: UIImage {
-    /// 调整图片亮度、对比度、饱和度
-    /// - Parameters:
-    ///   - brightness: value in [-1, 1]
-    ///   - contrast: value in [-1, 1]
-    ///   - saturation: value in [-1, 1]
-    func adjust(brightness: Float, contrast: Float, saturation: Float) -> UIImage? {
-        guard let ciImage = toCIImage() else {
-            return base
-        }
-        
-        let filter = CIFilter(name: "CIColorControls")
-        filter?.setValue(ciImage, forKey: kCIInputImageKey)
-        filter?.setValue(ZLImageEditorConfiguration.AdjustTool.brightness.filterValue(brightness), forKey: ZLImageEditorConfiguration.AdjustTool.brightness.key)
-        filter?.setValue(ZLImageEditorConfiguration.AdjustTool.contrast.filterValue(contrast), forKey: ZLImageEditorConfiguration.AdjustTool.contrast.key)
-        filter?.setValue(ZLImageEditorConfiguration.AdjustTool.saturation.filterValue(saturation), forKey: ZLImageEditorConfiguration.AdjustTool.saturation.key)
-        let outputCIImage = filter?.outputImage
-        return outputCIImage?.zl.toUIImage()
-    }
-}
 
 extension ZLImageEditorWrapper where Base: CIImage {
     func toUIImage() -> UIImage? {

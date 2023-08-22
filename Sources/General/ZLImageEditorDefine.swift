@@ -14,25 +14,12 @@ func zlRGB(_ red: CGFloat, _ green: CGFloat, _ blue: CGFloat) -> UIColor {
 }
 
 func getImage(_ named: String) -> UIImage? {
-    if ZLCustomImageDeploy.imageNames.contains(named), let image = UIImage(named: named) {
-        return image
-    }
-    if let image = ZLCustomImageDeploy.imageForKey[named] {
+    if let image = UIImage(named: named) {
         return image
     }
     return UIImage(named: named, in: Bundle.zlImageEditorBundle, compatibleWith: nil)
 }
 
 func deviceSafeAreaInsets() -> UIEdgeInsets {
-    var insets: UIEdgeInsets = .zero
-    
-    //if #available(iOS 11, *) {
-        insets = UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-    //}
-    
-    return insets
-}
-
-func zl_debugPrint(_ message: Any) {
-//    debugPrint(message)
+    return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
 }

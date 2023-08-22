@@ -61,42 +61,6 @@ public class ZLImageEditorConfiguration: NSObject {
         }
     }
     
-/*    private var pri_textStickerTextColors: [UIColor] = [.white, .black, zlRGB(241, 79, 79), zlRGB(243, 170, 78), zlRGB(80, 169, 56), zlRGB(30, 183, 243), zlRGB(139, 105, 234)]
-    /// Text sticker colors for image editor.
-    @objc public var textStickerTextColors: [UIColor] {
-        get {
-            if pri_textStickerTextColors.isEmpty {
-                return [.white, .black, zlRGB(241, 79, 79), zlRGB(243, 170, 78), zlRGB(80, 169, 56), zlRGB(30, 183, 243), zlRGB(139, 105, 234)]
-            } else {
-                return pri_textStickerTextColors
-            }
-        }
-        set {
-            pri_textStickerTextColors = newValue
-        }
-    }*/
-    
-    /// The default text sticker color. If this color not in textStickerTextColors, will pick the first color in textStickerTextColors as the default.
-    //@objc public var textStickerDefaultTextColor = UIColor.white
-
-    /// Whether text sticker allows line break.
-    //@objc public var textStickerCanLineBreak = false
-    
-    private var pri_filters: [ZLFilter] = ZLFilter.all
-    /// Filters for image editor.
-    @objc public var filters: [ZLFilter] {
-        get {
-            if pri_filters.isEmpty {
-                return ZLFilter.all
-            } else {
-                return pri_filters
-            }
-        }
-        set {
-            pri_filters = newValue
-        }
-    }
-    
     @objc public var imageStickerContainerView: (UIView & ZLImageStickerContainerDelegate)?
 
     @objc public var fontChooserContainerView: (UIView & ZLTextFontChooserDelegate)?

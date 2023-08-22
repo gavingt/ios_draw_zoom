@@ -56,10 +56,6 @@ public class ZLProgressHUD: UIView {
     
     private lazy var loadingView = UIImageView(image: style.icon)
     
-    deinit {
-        zl_debugPrint("ZLProgressHUD deinit")
-    }
-    
     @objc public init(style: ZLProgressHUD.HUDStyle) {
         self.style = style
         super.init(frame: UIScreen.main.bounds)
@@ -93,7 +89,7 @@ public class ZLProgressHUD: UIView {
         label.textAlignment = .center
         label.textColor = style.textColor
         label.font = UIFont.systemFont(ofSize: 16)
-        label.text = localLanguageTextValue(.hudLoading)
+        label.text = "Loading"
         view.addSubview(label)
         
         addSubview(view)

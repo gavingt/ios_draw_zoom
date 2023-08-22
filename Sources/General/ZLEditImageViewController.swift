@@ -54,9 +54,9 @@ open class ZLEditImageViewController: UIViewController {
     open lazy var doneBtn: UIButton = {
         let btn = UIButton(type: .custom)
         btn.titleLabel?.font = ZLImageEditorLayout.bottomToolTitleFont
-        btn.backgroundColor = .zl.editDoneBtnBgColor
-        btn.setTitle(localLanguageTextValue(.editFinish), for: .normal)
-        btn.setTitleColor(.zl.editDoneBtnTitleColor, for: .normal)
+        btn.backgroundColor = .green
+        btn.setTitle("Done", for: .normal)
+        btn.setTitleColor(.white, for: .normal)
         btn.addTarget(self, action: #selector(doneBtnClick), for: .touchUpInside)
         btn.layer.masksToBounds = true
         btn.layer.cornerRadius = ZLImageEditorLayout.bottomToolBtnCornerRadius
@@ -181,7 +181,7 @@ open class ZLEditImageViewController: UIViewController {
         undoBtn.frame = CGRect(x: redoBtn.zl.left - 10 - 35, y: 30, width: 35, height: 30)
 
         let doneBtnH = ZLImageEditorLayout.bottomToolBtnH
-        let doneBtnW = localLanguageTextValue(.editFinish).zl.boundingRect(font: ZLImageEditorLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: doneBtnH)).width + 20
+        let doneBtnW = "Done".zl.boundingRect(font: ZLImageEditorLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: doneBtnH)).width + 20
         doneBtn.frame = CGRect(x: view.zl.width - 20 - doneBtnW, y: 83, width: doneBtnW, height: doneBtnH)
 
         if !drawPaths.isEmpty {
@@ -283,7 +283,7 @@ open class ZLEditImageViewController: UIViewController {
         var editModel: ZLEditImageModel?
         if hasEdit {
             autoreleasepool {
-                let hud = ZLProgressHUD(style: ZLImageEditorUIConfiguration.default().hudStyle)
+                let hud = ZLProgressHUD(style: .dark)
                 hud.show()
 
                 resImage = buildImage()
