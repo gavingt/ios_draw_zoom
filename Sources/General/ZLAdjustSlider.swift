@@ -1,3 +1,4 @@
+/*
 import UIKit
 
 class ZLAdjustSlider: UIView {
@@ -167,3 +168,4 @@ class ZLAdjustSlider: UIView {
         }
     }
 }
+*/

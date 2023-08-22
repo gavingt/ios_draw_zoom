@@ -44,7 +44,7 @@ public class ZLImageEditorConfiguration: NSObject {
     }
     
     /// The default draw color. If this color not in editImageDrawColors, will pick the first color in editImageDrawColors as the default.
-    @objc public var defaultDrawColor = /*zlRGB(241, 79, 79)*/UIColor(red: 0, green: 0, blue: 1, alpha: 0.7)
+    //@objc public var defaultDrawColor = UIColor(red: 0, green: 0, blue: 1, alpha: 0.7)
     
     private var pri_clipRatios: [ZLImageClipRatio] = [.custom]
     /// Edit ratios for image editor.
@@ -61,7 +61,7 @@ public class ZLImageEditorConfiguration: NSObject {
         }
     }
     
-    private var pri_textStickerTextColors: [UIColor] = [.white, .black, zlRGB(241, 79, 79), zlRGB(243, 170, 78), zlRGB(80, 169, 56), zlRGB(30, 183, 243), zlRGB(139, 105, 234)]
+/*    private var pri_textStickerTextColors: [UIColor] = [.white, .black, zlRGB(241, 79, 79), zlRGB(243, 170, 78), zlRGB(80, 169, 56), zlRGB(30, 183, 243), zlRGB(139, 105, 234)]
     /// Text sticker colors for image editor.
     @objc public var textStickerTextColors: [UIColor] {
         get {
@@ -74,13 +74,13 @@ public class ZLImageEditorConfiguration: NSObject {
         set {
             pri_textStickerTextColors = newValue
         }
-    }
+    }*/
     
     /// The default text sticker color. If this color not in textStickerTextColors, will pick the first color in textStickerTextColors as the default.
-    @objc public var textStickerDefaultTextColor = UIColor.white
+    //@objc public var textStickerDefaultTextColor = UIColor.white
 
     /// Whether text sticker allows line break.
-    @objc public var textStickerCanLineBreak = false
+    //@objc public var textStickerCanLineBreak = false
     
     private var pri_filters: [ZLFilter] = ZLFilter.all
     /// Filters for image editor.

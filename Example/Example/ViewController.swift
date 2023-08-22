@@ -88,14 +88,14 @@ class ViewController: UIViewController {
             make.left.equalTo(self.editImageToolView.snp.centerX)
         }
 
-        self.editImageClipToolSwitch = UISwitch()
+/*        self.editImageClipToolSwitch = UISwitch()
         self.editImageClipToolSwitch.isOn = config.tools.contains(.clip)
         self.editImageClipToolSwitch.addTarget(self, action: #selector(clipToolChanged), for: .valueChanged)
         self.editImageToolView.addSubview(self.editImageClipToolSwitch)
         self.editImageClipToolSwitch.snp.makeConstraints { (make) in
             make.left.equalTo(cropToolLabel.snp.right).offset(spacing)
             make.centerY.equalTo(cropToolLabel)
-        }
+        }*/
 
         let imageStickerToolLabel = createLabel("Image sticker")
         self.editImageToolView.addSubview(imageStickerToolLabel)

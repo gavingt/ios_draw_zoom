@@ -1,3 +1,4 @@
+/*
 //
 //  ZLClipImageDismissAnimatedTransition.swift
 //  ZLImageEditor
@@ -55,3 +56,4 @@ class ZLClipImageDismissAnimatedTransition: NSObject, UIViewControllerAnimatedTr
         }
     }
 }
+*/

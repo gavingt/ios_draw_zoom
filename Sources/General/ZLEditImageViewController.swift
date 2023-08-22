@@ -5,39 +5,24 @@ public class ZLEditImageModel: NSObject {
     public let drawPaths: [ZLDrawPath]
     public let editRect: CGRect?
     public let angle: CGFloat
-    public let selectRatio: ZLImageClipRatio?
-    public let selectFilter: ZLFilter?
 
-    public init(
-            drawPaths: [ZLDrawPath],
-            editRect: CGRect?,
-            angle: CGFloat,
-            selectRatio: ZLImageClipRatio?,
-            selectFilter: ZLFilter
-    ) {
+    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?) {
         self.drawPaths = drawPaths
         self.editRect = editRect
         self.angle = angle
-        self.selectRatio = selectRatio
-        self.selectFilter = selectFilter
         super.init()
     }
 }
 
+
 open class ZLEditImageViewController: UIViewController {
+
     static let maxDrawLineImageWidth: CGFloat = 600
-
     static let shadowColorFrom = UIColor.black.withAlphaComponent(0.35).cgColor
-
     static let shadowColorTo = UIColor.clear.cgColor
-
     public var drawColViewH: CGFloat = 50
-
     public var filterColViewH: CGFloat = 80
-
     public var adjustColViewH: CGFloat = 60
-
-    public var ashbinSize = CGSize(width: 160, height: 80)
 
     open lazy var mainScrollView: UIScrollView = {
         let view = UIScrollView()
@@ -63,32 +48,8 @@ open class ZLEditImageViewController: UIViewController {
         return view
     }()
 
-    open lazy var topShadowView = UIView()
-
-    open lazy var topShadowLayer: CAGradientLayer = {
-        let layer = CAGradientLayer()
-        layer.colors = [ZLEditImageViewController.shadowColorFrom, ZLEditImageViewController.shadowColorTo]
-        layer.locations = [0, 1]
-        return layer
-    }()
-
     open lazy var bottomShadowView = UIView()
 
-    open lazy var bottomShadowLayer: CAGradientLayer = {
-        let layer = CAGradientLayer()
-        layer.colors = [ZLEditImageViewController.shadowColorTo, ZLEditImageViewController.shadowColorFrom]
-        layer.locations = [0, 1]
-        return layer
-    }()
-
-    open lazy var cancelBtn: ZLEnlargeButton = {
-        let btn = ZLEnlargeButton(type: .custom)
-        btn.setImage(getImage("zl_retake"), for: .normal)
-        btn.addTarget(self, action: #selector(cancelBtnClick), for: .touchUpInside)
-        btn.adjustsImageWhenHighlighted = false
-        btn.enlargeInset = 30
-        return btn
-    }()
 
     open lazy var doneBtn: UIButton = {
         let btn = UIButton(type: .custom)
@@ -112,39 +73,24 @@ open class ZLEditImageViewController: UIViewController {
         return btn
     }()
 
-    open var redoBtn: UIButton?
-
-    open lazy var ashbinView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .zl.ashbinNormalBgColor
-        view.layer.cornerRadius = 15
-        view.layer.masksToBounds = true
-        view.isHidden = true
-        return view
+    open lazy var redoBtn: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(getImage("zl_redo_disable"), for: .disabled)
+        btn.setImage(getImage("zl_redo"), for: .normal)
+        btn.adjustsImageWhenHighlighted = false
+        btn.isEnabled = false
+        btn.addTarget(self, action: #selector(redoBtnClick), for: .touchUpInside)
+        return btn
     }()
 
-    open lazy var ashbinImgView = UIImageView(image: getImage("zl_ashbin"), highlightedImage: getImage("zl_ashbin_open"))
-
-    var animateDismiss = true
 
     var originalImage: UIImage
 
-    // The frame after first layout, used in dismiss animation.
-    var originalFrame: CGRect = .zero
-
     var editRect: CGRect
-
-    let tools: [ZLImageEditorConfiguration.EditTool]
-
-    let adjustTools: [ZLImageEditorConfiguration.AdjustTool]
 
     var selectRatio: ZLImageClipRatio?
 
     var editImage: UIImage
-
-    var editImageWithoutAdjust: UIImage
-
-    var editImageAdjustRef: UIImage?
 
     // Show draw lines.
     lazy var drawingImageView: UIImageView = {
@@ -154,36 +100,17 @@ open class ZLEditImageViewController: UIViewController {
         return view
     }()
 
-    var selectedTool: ZLImageEditorConfiguration.EditTool = .draw
-
-    var selectedAdjustTool: ZLImageEditorConfiguration.AdjustTool?
-
-    let drawColors: [UIColor]
-
     var currentDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
 
     var drawPaths: [ZLDrawPath]
 
     var redoDrawPaths: [ZLDrawPath]
 
-    var drawLineWidth: CGFloat = 5
-
-    var thumbnailFilterImages: [UIImage] = []
-
-    // Cache the filter image of original image
-    var filterImages: [String: UIImage] = [:]
-
-    var currentFilter: ZLFilter
-
-    var stickers: [UIView] = []
+    var drawLineWidth: CGFloat = 10
 
     var isScrolling = false
 
     var shouldLayout = true
-
-/*    var imageStickerContainerIsHidden = true
-
-    var fontChooserContainerIsHidden = true*/
 
     var angle: CGFloat
 
@@ -196,13 +123,6 @@ open class ZLEditImageViewController: UIViewController {
         return originalImage.size
     }
 
-    //var toolViewStateTimer: Timer?
-
-    // TODO: Remove.
-    let canRedo = ZLImageEditorConfiguration.default().canRedo
-
-    var hasAdjustedImage = false
-
     @objc public var editFinishBlock: ((UIImage, ZLEditImageModel?) -> Void)?
 
     override open var prefersStatusBarHidden: Bool {
@@ -214,54 +134,22 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
-    @objc public class func showEditImageVC(
-            parentVC: UIViewController?,
-            animate: Bool = true,
-            image: UIImage,
-            editModel: ZLEditImageModel? = nil,
-            completion: ((UIImage, ZLEditImageModel?) -> Void)?
-    ) {
-        let tools = ZLImageEditorConfiguration.default().tools
-        if ZLImageEditorConfiguration.default().showClipDirectlyIfOnlyHasClipTool, tools.count == 1, tools.contains(.clip) {
-            let vc = ZLClipImageViewController(image: image, editRect: editModel?.editRect, angle: editModel?.angle ?? 0, selectRatio: editModel?.selectRatio)
-            vc.clipDoneBlock = { angle, editRect, ratio in
-                let m = ZLEditImageModel(drawPaths: [], editRect: editRect, angle: angle, selectRatio: ratio, selectFilter: .normal)
-                completion?(image.zl.clipImage(angle: angle, editRect: editRect, isCircle: ratio.isCircle) ?? image, m)
-            }
-            vc.animateDismiss = animate
-            vc.modalPresentationStyle = .fullScreen
-            parentVC?.present(vc, animated: animate, completion: nil)
-        } else {
-            let vc = ZLEditImageViewController(image: image, editModel: editModel)
-            vc.editFinishBlock = { ei, editImageModel in
-                completion?(ei, editImageModel)
-            }
-            vc.animateDismiss = animate
-            vc.modalPresentationStyle = .fullScreen
-            parentVC?.present(vc, animated: animate, completion: nil)
+    @objc public class func showEditImageVC(parentVC: UIViewController?, animate: Bool = true, image: UIImage, editModel: ZLEditImageModel? = nil, completion: ((UIImage, ZLEditImageModel?) -> Void)?) {
+        let vc = ZLEditImageViewController(image: image, editModel: editModel)
+        vc.editFinishBlock = { ei, editImageModel in
+            completion?(ei, editImageModel)
         }
+        vc.modalPresentationStyle = .fullScreen
+        parentVC?.present(vc, animated: animate, completion: nil)
     }
 
     @objc public init(image: UIImage, editModel: ZLEditImageModel? = nil) {
         originalImage = image.zl.fixOrientation()
         editImage = originalImage
-        editImageWithoutAdjust = originalImage
         editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
-        drawColors = ZLImageEditorConfiguration.default().drawColors
-        currentFilter = editModel?.selectFilter ?? .normal
         drawPaths = editModel?.drawPaths ?? []
         redoDrawPaths = drawPaths
         angle = editModel?.angle ?? 0
-        selectRatio = editModel?.selectRatio
-
-        var ts = ZLImageEditorConfiguration.default().tools
-        if ts.contains(.imageSticker), ZLImageEditorConfiguration.default().imageStickerContainerView == nil {
-            ts.removeAll { $0 == .imageSticker }
-        }
-        tools = ts
-        adjustTools = ZLImageEditorConfiguration.default().adjustTools
-        selectedAdjustTool = adjustTools.first
-
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -287,38 +175,14 @@ open class ZLEditImageViewController: UIViewController {
         mainScrollView.frame = view.bounds
         resetContainerViewFrame()
 
-        topShadowView.frame = CGRect(x: 0, y: 0, width: view.zl.width, height: 150)
-        topShadowLayer.frame = topShadowView.bounds
-        cancelBtn.frame = CGRect(x: 30, y: insets.top + 10, width: 28, height: 28)
-
         bottomShadowView.frame = CGRect(x: 0, y: view.zl.height - 140 - insets.bottom, width: view.zl.width, height: 140 + insets.bottom)
-        bottomShadowLayer.frame = bottomShadowView.bounds
 
-        if canRedo, let redoBtn = redoBtn {
-            redoBtn.frame = CGRect(x: view.zl.width - 15 - 35, y: 30, width: 35, height: 30)
-            undoBtn.frame = CGRect(x: redoBtn.zl.left - 10 - 35, y: 30, width: 35, height: 30)
-        } else {
-            undoBtn.frame = CGRect(x: view.zl.width - 15 - 35, y: 30, width: 35, height: 30)
-        }
-
-        ashbinView.frame = CGRect(
-                x: (view.zl.width - ashbinSize.width) / 2,
-                y: view.zl.height - ashbinSize.height - 40,
-                width: ashbinSize.width,
-                height: ashbinSize.height
-        )
-        ashbinImgView.frame = CGRect(
-                x: (ashbinSize.width - 25) / 2,
-                y: 15,
-                width: 25,
-                height: 25
-        )
-
-        let toolY: CGFloat = 85
+        redoBtn.frame = CGRect(x: view.zl.width - 15 - 35, y: 30, width: 35, height: 30)
+        undoBtn.frame = CGRect(x: redoBtn.zl.left - 10 - 35, y: 30, width: 35, height: 30)
 
         let doneBtnH = ZLImageEditorLayout.bottomToolBtnH
         let doneBtnW = localLanguageTextValue(.editFinish).zl.boundingRect(font: ZLImageEditorLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: doneBtnH)).width + 20
-        doneBtn.frame = CGRect(x: view.zl.width - 20 - doneBtnW, y: toolY - 2, width: doneBtnW, height: doneBtnH)
+        doneBtn.frame = CGRect(x: view.zl.width - 20 - doneBtnW, y: 83, width: doneBtnW, height: doneBtnH)
 
         if !drawPaths.isEmpty {
             drawLine()
@@ -367,7 +231,6 @@ open class ZLEditImageViewController: UIViewController {
             mainScrollView.maximumZoomScale = max(3, view.frame.height / h)
         }
 
-        originalFrame = view.convert(containerView.frame, from: mainScrollView)
         isScrolling = false
     }
 
@@ -380,46 +243,11 @@ open class ZLEditImageViewController: UIViewController {
         containerView.addSubview(imageView)
         containerView.addSubview(drawingImageView)
 
-        view.addSubview(topShadowView)
-        topShadowView.layer.addSublayer(topShadowLayer)
-        topShadowView.addSubview(cancelBtn)
-
         view.addSubview(bottomShadowView)
-        bottomShadowView.layer.addSublayer(bottomShadowLayer)
         bottomShadowView.addSubview(doneBtn)
 
-        let drawColorLayout = UICollectionViewFlowLayout()
-        let drawColorItemWidth: CGFloat = 30
-        drawColorLayout.itemSize = CGSize(width: drawColorItemWidth, height: drawColorItemWidth)
-        drawColorLayout.minimumLineSpacing = 15
-        drawColorLayout.minimumInteritemSpacing = 15
-        drawColorLayout.scrollDirection = .horizontal
-        let drawColorTopBottomInset = (drawColViewH - drawColorItemWidth) / 2
-        drawColorLayout.sectionInset = UIEdgeInsets(top: drawColorTopBottomInset, left: 0, bottom: drawColorTopBottomInset, right: 0)
-
         bottomShadowView.addSubview(undoBtn)
-        if canRedo {
-            let btn = UIButton(type: .custom)
-            btn.setImage(getImage("zl_redo_disable"), for: .disabled)
-            btn.setImage(getImage("zl_redo"), for: .normal)
-            btn.adjustsImageWhenHighlighted = false
-            btn.isEnabled = false
-            btn.addTarget(self, action: #selector(redoBtnClick), for: .touchUpInside)
-            bottomShadowView.addSubview(btn)
-            redoBtn = btn
-        }
-
-        view.addSubview(ashbinView)
-        ashbinView.addSubview(ashbinImgView)
-
-        let asbinTipLabel = UILabel(frame: CGRect(x: 0, y: ashbinSize.height - 34, width: ashbinSize.width, height: 34))
-        asbinTipLabel.font = UIFont.systemFont(ofSize: 12)
-        asbinTipLabel.textAlignment = .center
-        asbinTipLabel.textColor = .white
-        asbinTipLabel.text = localLanguageTextValue(.textStickerRemoveTips)
-        asbinTipLabel.numberOfLines = 2
-        asbinTipLabel.lineBreakMode = .byCharWrapping
-        ashbinView.addSubview(asbinTipLabel)
+        bottomShadowView.addSubview(redoBtn)
 
         let tapGes = UITapGestureRecognizer(target: self, action: #selector(tapAction(_:)))
         tapGes.delegate = self
@@ -441,13 +269,13 @@ open class ZLEditImageViewController: UIViewController {
 
 
     @objc func cancelBtnClick() {
-        dismiss(animated: animateDismiss, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 
 
     @objc func doneBtnClick() {
         var hasEdit = true
-        if drawPaths.isEmpty, editRect.size == imageSize, angle == 0, true, true, currentFilter.applier == nil {
+        if drawPaths.isEmpty, editRect.size == imageSize, angle == 0 {
             hasEdit = false
         }
 
@@ -459,7 +287,7 @@ open class ZLEditImageViewController: UIViewController {
                 hud.show()
 
                 resImage = buildImage()
-                resImage = resImage.zl.clipImage(angle: angle, editRect: editRect, isCircle: selectRatio?.isCircle ?? false) ?? resImage
+                //resImage = resImage.zl.clipImage(angle: angle, editRect: editRect, isCircle: selectRatio?.isCircle ?? false) ?? resImage
                 if let oriDataSize = originalImage.jpegData(compressionQuality: 1)?.count {
                     resImage = resImage.zl.compress(to: oriDataSize)
                 }
@@ -467,16 +295,10 @@ open class ZLEditImageViewController: UIViewController {
                 hud.hide()
             }
 
-            editModel = ZLEditImageModel(
-                    drawPaths: drawPaths,
-                    editRect: editRect,
-                    angle: angle,
-                    selectRatio: selectRatio,
-                    selectFilter: currentFilter
-            )
+            editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle, selectRatio: selectRatio)
         }
 
-        dismiss(animated: animateDismiss) {
+        dismiss(animated: true) {
             self.editFinishBlock?(resImage, editModel)
         }
     }
@@ -486,7 +308,7 @@ open class ZLEditImageViewController: UIViewController {
         guard !drawPaths.isEmpty else { return }
         drawPaths.removeLast()
         undoBtn.isEnabled = !drawPaths.isEmpty
-        redoBtn?.isEnabled = drawPaths.count != redoDrawPaths.count
+        redoBtn.isEnabled = drawPaths.count != redoDrawPaths.count
         drawLine()
     }
 
@@ -496,7 +318,7 @@ open class ZLEditImageViewController: UIViewController {
         let path = redoDrawPaths[drawPaths.count]
         drawPaths.append(path)
         undoBtn.isEnabled = !drawPaths.isEmpty
-        redoBtn?.isEnabled = drawPaths.count != redoDrawPaths.count
+        redoBtn.isEnabled = drawPaths.count != redoDrawPaths.count
         drawLine()
     }
 
@@ -525,7 +347,7 @@ open class ZLEditImageViewController: UIViewController {
                 toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
             }
 
-            let path = ZLDrawPath(pathColor: currentDrawColor, pathWidth: drawLineWidth / mainScrollView.zoomScale, ratio: ratio / originalRatio / toImageScale, startPoint: point)
+            let path = ZLDrawPath(pathColor: currentDrawColor, pathWidth: drawLineWidth/* / mainScrollView.zoomScale*/, ratio: ratio / originalRatio / toImageScale, startPoint: point)
             drawPaths.append(path)
             redoDrawPaths = drawPaths
         } else if pan.state == .changed {
@@ -534,7 +356,7 @@ open class ZLEditImageViewController: UIViewController {
             drawLine()
         } else if pan.state == .cancelled || pan.state == .ended {
             undoBtn.isEnabled = !drawPaths.isEmpty
-            redoBtn?.isEnabled = false
+            redoBtn.isEnabled = false
         }
     }
 
@@ -586,18 +408,11 @@ open class ZLEditImageViewController: UIViewController {
         return UIImage(cgImage: cgi, scale: editImage.scale, orientation: .up)
     }
 
-    func finishClipDismissAnimate() {
-        mainScrollView.alpha = 1
-        UIView.animate(withDuration: 0.1) {
-            self.topShadowView.alpha = 1
-            self.bottomShadowView.alpha = 1
-        }
-    }
 }
+
 
 extension ZLEditImageViewController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        //guard imageStickerContainerIsHidden, fontChooserContainerIsHidden else { return false }
         if gestureRecognizer is UITapGestureRecognizer {
             if bottomShadowView.alpha == 1 {
                 let p = gestureRecognizer.location(in: view)
@@ -612,6 +427,7 @@ extension ZLEditImageViewController: UIGestureRecognizerDelegate {
         return true
     }
 }
+
 
 // MARK: scroll view delegate
 extension ZLEditImageViewController: UIScrollViewDelegate {
