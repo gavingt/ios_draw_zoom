@@ -6,7 +6,7 @@ public class ZLEditImageModel: NSObject {
     public let editRect: CGRect?
     public let angle: CGFloat
 
-    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat, selectRatio: ZLImageClipRatio?) {
+    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat/*, selectRatio: ZLImageClipRatio?*/) {
         self.drawPaths = drawPaths
         self.editRect = editRect
         self.angle = angle
@@ -53,13 +53,13 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var doneBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.titleLabel?.font = ZLImageEditorLayout.bottomToolTitleFont
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         btn.backgroundColor = .green
         btn.setTitle("Done", for: .normal)
         btn.setTitleColor(.white, for: .normal)
         btn.addTarget(self, action: #selector(doneBtnClick), for: .touchUpInside)
         btn.layer.masksToBounds = true
-        btn.layer.cornerRadius = ZLImageEditorLayout.bottomToolBtnCornerRadius
+        btn.layer.cornerRadius = 5
         return btn
     }()
 
@@ -88,7 +88,7 @@ open class ZLEditImageViewController: UIViewController {
 
     var editRect: CGRect
 
-    var selectRatio: ZLImageClipRatio?
+    //var selectRatio: ZLImageClipRatio?
 
     var editImage: UIImage
 
@@ -180,8 +180,8 @@ open class ZLEditImageViewController: UIViewController {
         redoBtn.frame = CGRect(x: view.zl.width - 15 - 35, y: 30, width: 35, height: 30)
         undoBtn.frame = CGRect(x: redoBtn.zl.left - 10 - 35, y: 30, width: 35, height: 30)
 
-        let doneBtnH = ZLImageEditorLayout.bottomToolBtnH
-        let doneBtnW = "Done".zl.boundingRect(font: ZLImageEditorLayout.bottomToolTitleFont, limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: doneBtnH)).width + 20
+        let doneBtnH = CGFloat(34)
+        let doneBtnW = "Done".zl.boundingRect(font: UIFont.systemFont(ofSize: 17), limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: doneBtnH)).width + 20
         doneBtn.frame = CGRect(x: view.zl.width - 20 - doneBtnW, y: 83, width: doneBtnW, height: doneBtnH)
 
         if !drawPaths.isEmpty {
@@ -207,14 +207,14 @@ open class ZLEditImageViewController: UIViewController {
         containerView.frame = CGRect(x: max(0, (scrollViewSize.width - w) / 2), y: max(0, (scrollViewSize.height - h) / 2), width: w, height: h)
         mainScrollView.contentSize = containerView.frame.size
 
-        if selectRatio?.isCircle == true {
+/*        if selectRatio?.isCircle == true {
             let mask = CAShapeLayer()
             let path = UIBezierPath(arcCenter: CGPoint(x: w / 2, y: h / 2), radius: w / 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
             mask.path = path.cgPath
             containerView.layer.mask = mask
-        } else {
+        } else {*/
             containerView.layer.mask = nil
-        }
+        //}
 
         let scaleImageOrigin = CGPoint(x: -editRect.origin.x * ratio, y: -editRect.origin.y * ratio)
         let scaleImageSize = CGSize(width: imageSize.width * ratio, height: imageSize.height * ratio)
@@ -287,7 +287,6 @@ open class ZLEditImageViewController: UIViewController {
                 hud.show()
 
                 resImage = buildImage()
-                //resImage = resImage.zl.clipImage(angle: angle, editRect: editRect, isCircle: selectRatio?.isCircle ?? false) ?? resImage
                 if let oriDataSize = originalImage.jpegData(compressionQuality: 1)?.count {
                     resImage = resImage.zl.compress(to: oriDataSize)
                 }
@@ -295,7 +294,7 @@ open class ZLEditImageViewController: UIViewController {
                 hud.hide()
             }
 
-            editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle, selectRatio: selectRatio)
+            editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle/*, selectRatio: selectRatio*/)
         }
 
         dismiss(animated: true) {
