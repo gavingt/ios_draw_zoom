@@ -1,29 +1,3 @@
-//
-//  UIImage+ZLImageEditor.swift
-//  ZLImageEditor
-//
-//  Created by long on 2020/8/22.
-//
-//  Copyright (c) 2020 Long Zhang <495181165@qq.com>
-//
-//  Permission is hereby granted, free of charge, to any person obtaining a copy
-//  of this software and associated documentation files (the "Software"), to deal
-//  in the Software without restriction, including without limitation the rights
-//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//  THE SOFTWARE.
-
 import UIKit
 import Accelerate
 
@@ -177,27 +151,7 @@ extension ZLImageEditorWrapper where Base: UIImage {
 
         return newImage
     }
-    
-    func mosaicImage() -> UIImage? {
-        guard let currCgImage = base.cgImage else {
-            return nil
-        }
-        
-        let scale = 8 * width / UIScreen.main.bounds.width
-        let currCiImage = CIImage(cgImage: currCgImage)
-        let filter = CIFilter(name: "CIPixellate")
-        filter?.setValue(currCiImage, forKey: kCIInputImageKey)
-        filter?.setValue(scale, forKey: kCIInputScaleKey)
-        guard let outputImage = filter?.outputImage else { return nil }
-        
-        let context = CIContext()
-        
-        if let cgImg = context.createCGImage(outputImage, from: CGRect(origin: .zero, size: base.size)) {
-            return UIImage(cgImage: cgImg)
-        } else {
-            return nil
-        }
-    }
+
     
     func resize(_ size: CGSize) -> UIImage? {
         if size.width <= 0 || size.height <= 0 {
@@ -255,62 +209,7 @@ extension ZLImageEditorWrapper where Base: UIImage {
         // create a UIImage
         return UIImage(cgImage: destCGImage, scale: base.scale, orientation: base.imageOrientation)
     }
-    
-    func toCIImage() -> CIImage? {
-        var ciImage = base.ciImage
-        if ciImage == nil, let cgImage = base.cgImage {
-            ciImage = CIImage(cgImage: cgImage)
-        }
-        return ciImage
-    }
-    
-    func clipImage(angle: CGFloat, editRect: CGRect, isCircle: Bool) -> UIImage? {
-        let a = ((Int(angle) % 360) - 360) % 360
-        var newImage: UIImage = base
-        if a == -90 {
-            newImage = rotate(orientation: .left)
-        } else if a == -180 {
-            newImage = rotate(orientation: .down)
-        } else if a == -270 {
-            newImage = rotate(orientation: .right)
-        }
-        guard editRect.size != newImage.size else {
-            return newImage
-        }
-        let origin = CGPoint(x: -editRect.minX, y: -editRect.minY)
-        UIGraphicsBeginImageContextWithOptions(editRect.size, false, newImage.scale)
-        let context = UIGraphicsGetCurrentContext()
-        if isCircle {
-            context?.addEllipse(in: CGRect(origin: .zero, size: editRect.size))
-            context?.clip()
-        }
-        newImage.draw(at: origin)
-        let temp = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        guard let cgi = temp?.cgImage else {
-            return temp
-        }
-        let clipImage = UIImage(cgImage: cgi, scale: newImage.scale, orientation: .up)
-        return clipImage
-    }
-    
-    func blurImage(level: CGFloat) -> UIImage? {
-        guard let ciImage = toCIImage() else {
-            return nil
-        }
-        let blurFilter = CIFilter(name: "CIGaussianBlur")
-        blurFilter?.setValue(ciImage, forKey: "inputImage")
-        blurFilter?.setValue(level, forKey: "inputRadius")
-        
-        guard let outputImage = blurFilter?.outputImage else {
-            return nil
-        }
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(outputImage, from: ciImage.extent) else {
-            return nil
-        }
-        return UIImage(cgImage: cgImage)
-    }
+
     
     /// Compress an image to the max size
     /// - Warning: If the image has a transparent background color, this method will change it as jpeg doesn't support it.
@@ -337,18 +236,6 @@ extension ZLImageEditorWrapper where Base: UIImage {
             return base
         }
         return UIImage(data: data) ?? base
-    }
-
-    func fillColor(_ color: UIColor) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(base.size, false, base.scale)
-        let drawRect = CGRect(x: 0, y: 0, width: base.zl.width, height: base.zl.height)
-        color.setFill()
-        UIRectFill(drawRect)
-        base.draw(in: drawRect, blendMode: .destinationIn, alpha: 1)
-
-        let tintedImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return tintedImage
     }
 }
 

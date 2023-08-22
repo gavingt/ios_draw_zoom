@@ -180,9 +180,7 @@ open class ZLEditImageViewController: UIViewController {
         redoBtn.frame = CGRect(x: view.zl.width - 15 - 35, y: 30, width: 35, height: 30)
         undoBtn.frame = CGRect(x: redoBtn.zl.left - 10 - 35, y: 30, width: 35, height: 30)
 
-        let doneBtnH = CGFloat(34)
-        let doneBtnW = "Done".zl.boundingRect(font: UIFont.systemFont(ofSize: 17), limitSize: CGSize(width: CGFloat.greatestFiniteMagnitude, height: doneBtnH)).width + 20
-        doneBtn.frame = CGRect(x: view.zl.width - 20 - doneBtnW, y: 83, width: doneBtnW, height: doneBtnH)
+        doneBtn.frame = CGRect(x: 20, y: 83, width: view.frame.width - 40, height: 40)
 
         if !drawPaths.isEmpty {
             drawLine()
@@ -262,7 +260,7 @@ open class ZLEditImageViewController: UIViewController {
 
 
     func rotationImageView() {
-        let transform = CGAffineTransform(rotationAngle: angle.zl.toPi)
+        let transform = CGAffineTransform(rotationAngle: angle.zl.base / 180 * .pi)
         imageView.transform = transform
         drawingImageView.transform = transform
     }
