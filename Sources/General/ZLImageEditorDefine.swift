@@ -26,9 +26,9 @@ func getImage(_ named: String) -> UIImage? {
 func deviceSafeAreaInsets() -> UIEdgeInsets {
     var insets: UIEdgeInsets = .zero
     
-    if #available(iOS 11, *) {
+    //if #available(iOS 11, *) {
         insets = UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-    }
+    //}
     
     return insets
 }
