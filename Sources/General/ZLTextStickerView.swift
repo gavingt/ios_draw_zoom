@@ -1,3 +1,4 @@
+/*
 //
 //  ZLTextStickerView.swift
 //  ZLImageEditor
@@ -242,3 +243,4 @@ public class ZLTextStickerState: NSObject {
         super.init()
     }
 }
+*/

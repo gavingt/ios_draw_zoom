@@ -1,3 +1,4 @@
+/*
 //
 //  ZLBaseStickerView.swift
 //  ZLImageEditor
@@ -395,3 +396,4 @@ extension ZLBaseStickerView: ZLStickerViewAdditional {
         maxGesScale *= scale
     }
 }
+*/
