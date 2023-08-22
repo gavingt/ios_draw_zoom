@@ -1,3 +1,4 @@
+/*
 //
 //  ImageStickerContainerView.swift
 //  Example
@@ -205,3 +206,4 @@ class ImageStickerCell: UICollectionViewCell {
     }
     
 }
+*/

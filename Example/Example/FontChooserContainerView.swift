@@ -1,3 +1,4 @@
+/*
 //
 //  FontChooserContainerView.swift
 //  Example
@@ -255,3 +256,4 @@ class FontCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 }
+*/
