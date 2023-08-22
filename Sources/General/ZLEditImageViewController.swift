@@ -17,12 +17,21 @@ public class ZLEditImageModel: NSObject {
 
 open class ZLEditImageViewController: UIViewController {
 
+    var originalImage: UIImage
+    var editRect: CGRect
+    var editImage: UIImage
+    var currentDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
     static let maxDrawLineImageWidth: CGFloat = 600
-    static let shadowColorFrom = UIColor.black.withAlphaComponent(0.35).cgColor
-    static let shadowColorTo = UIColor.clear.cgColor
-    public var drawColViewH: CGFloat = 50
-    public var filterColViewH: CGFloat = 80
-    public var adjustColViewH: CGFloat = 60
+
+    var drawPaths: [ZLDrawPath]
+    var redoDrawPaths: [ZLDrawPath]
+    var drawLineWidth: CGFloat = 10
+
+    var isScrolling = false
+    var shouldLayout = true
+    var angle: CGFloat
+
+    var panGes: UIPanGestureRecognizer!
 
     open lazy var mainScrollView: UIScrollView = {
         let view = UIScrollView()
@@ -65,8 +74,9 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var undoBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.setImage(getImage("zl_revoke_disable"), for: .disabled)
-        btn.setImage(getImage("zl_revoke"), for: .normal)
+
+        btn.setImage(UIImage(named: "zl_revoke_disable", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .disabled)
+        btn.setImage(UIImage(named: "zl_revoke", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .normal)
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
         btn.addTarget(self, action: #selector(undoBtnClick), for: .touchUpInside)
@@ -75,22 +85,13 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var redoBtn: UIButton = {
         let btn = UIButton(type: .custom)
-        btn.setImage(getImage("zl_redo_disable"), for: .disabled)
-        btn.setImage(getImage("zl_redo"), for: .normal)
+        btn.setImage(UIImage(named: "zl_redo_disable", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .disabled)
+        btn.setImage(UIImage(named: "zl_redo", in: Bundle.zlImageEditorBundle, compatibleWith: nil), for: .normal)
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
         btn.addTarget(self, action: #selector(redoBtnClick), for: .touchUpInside)
         return btn
     }()
-
-
-    var originalImage: UIImage
-
-    var editRect: CGRect
-
-    //var selectRatio: ZLImageClipRatio?
-
-    var editImage: UIImage
 
     // Show draw lines.
     lazy var drawingImageView: UIImageView = {
@@ -99,22 +100,6 @@ open class ZLEditImageViewController: UIViewController {
         view.isUserInteractionEnabled = true
         return view
     }()
-
-    var currentDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
-
-    var drawPaths: [ZLDrawPath]
-
-    var redoDrawPaths: [ZLDrawPath]
-
-    var drawLineWidth: CGFloat = 10
-
-    var isScrolling = false
-
-    var shouldLayout = true
-
-    var angle: CGFloat
-
-    var panGes: UIPanGestureRecognizer!
 
     var imageSize: CGSize {
         if angle == -90 || angle == -270 {
@@ -153,7 +138,7 @@ open class ZLEditImageViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    @available(*, unavailable)
+
     public required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -281,15 +266,15 @@ open class ZLEditImageViewController: UIViewController {
         var editModel: ZLEditImageModel?
         if hasEdit {
             autoreleasepool {
-                let hud = ZLProgressHUD(style: .dark)
-                hud.show()
+//                let hud = ZLProgressHUD(style: .dark)
+//                hud.show()
 
                 resImage = buildImage()
                 if let oriDataSize = originalImage.jpegData(compressionQuality: 1)?.count {
                     resImage = resImage.zl.compress(to: oriDataSize)
                 }
 
-                hud.hide()
+                //hud.hide()
             }
 
             editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle/*, selectRatio: selectRatio*/)

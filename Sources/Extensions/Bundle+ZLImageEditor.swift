@@ -3,8 +3,7 @@ import Foundation
 private class BundleFinder { }
 
 extension Bundle {
-    private static var bundle: Bundle?
-    
+
     static var normal_module: Bundle? = {
         let bundleName = "ZLImageEditor"
 
@@ -16,7 +15,7 @@ extension Bundle {
             Bundle(for: ZLEditImageViewController.self).resourceURL,
             
             // For command-line tools.
-            Bundle.main.bundleURL,
+            Bundle.main.bundleURL
         ]
         
         #if SWIFT_PACKAGE
