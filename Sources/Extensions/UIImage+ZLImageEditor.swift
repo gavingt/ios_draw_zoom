@@ -57,7 +57,8 @@ extension ZLImageEditorWrapper where Base: UIImage {
         }
         return UIImage(cgImage: newCgImage)
     }
-    
+
+
     func rotate(orientation: UIImage.Orientation) -> UIImage {
         guard let imagRef = base.cgImage else {
             return base
@@ -118,6 +119,7 @@ extension ZLImageEditorWrapper where Base: UIImage {
         
         return newImage ?? base
     }
+
     
     func swapRectWidthAndHeight(_ rect: CGRect) -> CGRect {
         var r = rect
@@ -125,7 +127,8 @@ extension ZLImageEditorWrapper where Base: UIImage {
         r.size.height = rect.width
         return r
     }
-    
+
+
     func rotate(degree: CGFloat) -> UIImage? {
         guard let cgImage = base.cgImage else {
             return nil
@@ -163,7 +166,8 @@ extension ZLImageEditorWrapper where Base: UIImage {
         UIGraphicsEndImageContext()
         return temp
     }
-    
+
+
     /// Processing speed is better than resize(:) method
     /// bitsPerPixel = bitsPerComponent * 4
     func resize_vI(_ size: CGSize, bitsPerComponent: UInt32 = 8, bitsPerPixel: UInt32 = 32) -> UIImage? {
@@ -238,6 +242,7 @@ extension ZLImageEditorWrapper where Base: UIImage {
         return UIImage(data: data) ?? base
     }
 }
+
 
 extension ZLImageEditorWrapper where Base: UIImage {
     var width: CGFloat {

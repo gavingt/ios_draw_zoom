@@ -6,7 +6,7 @@ public class ZLEditImageModel: NSObject {
     public let editRect: CGRect?
     public let angle: CGFloat
 
-    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat/*, selectRatio: ZLImageClipRatio?*/) {
+    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat) {
         self.drawPaths = drawPaths
         self.editRect = editRect
         self.angle = angle
@@ -20,9 +20,9 @@ open class ZLEditImageViewController: UIViewController {
     var originalImage: UIImage
     var editRect: CGRect
     var editImage: UIImage
-    var currentDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
+    static let normalDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
     static let maxDrawLineImageWidth: CGFloat = 600
-    static let minimumZoomScale: CGFloat = 1
+    static let minimumZoomScale: CGFloat = 0.9
 
     var drawPaths: [ZLDrawPath]
     var redoDrawPaths: [ZLDrawPath]
@@ -126,7 +126,7 @@ open class ZLEditImageViewController: UIViewController {
             completion?(ei, editImageModel)
         }
         vc.modalPresentationStyle = .fullScreen
-        parentVC?.present(vc, animated: true, completion: nil)
+        parentVC?.present(vc, animated: false, completion: nil)
     }
 
     @objc public init(image: UIImage, editModel: ZLEditImageModel? = nil) {
@@ -172,8 +172,6 @@ open class ZLEditImageViewController: UIViewController {
         if !drawPaths.isEmpty {
             drawAllLines()
         }
-
-        mainScrollView.zoomScale = ZLEditImageViewController.minimumZoomScale
     }
 
     override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -259,21 +257,42 @@ open class ZLEditImageViewController: UIViewController {
             hasEdit = false
         }
 
-        var resImage = originalImage
         var editModel: ZLEditImageModel?
         if hasEdit {
             autoreleasepool {
-                resImage = buildImage()
-                if let oriDataSize = originalImage.jpegData(compressionQuality: 1)?.count {
-                    resImage = resImage.zl.compress(to: oriDataSize)
+                // Temporarily increase the line width before creating the mask.
+                drawPaths.forEach { path in
+                    path.path.lineWidth += 10
+                    path.pathColor = .white
                 }
-            }
+                drawAllLines()
 
-            editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle/*, selectRatio: selectRatio*/)
+
+                // Create maskImage and initialize it to all black.
+                let imageSize = originalImage.size
+                let color: UIColor = .black
+                UIGraphicsBeginImageContextWithOptions(imageSize, true, 0)
+                let context = UIGraphicsGetCurrentContext()!
+                color.setFill()
+                context.fill(CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height))
+                editImage = UIGraphicsGetImageFromCurrentImageContext()!
+                UIGraphicsEndImageContext()
+
+                editImage = buildImage()
+                //paintedImage = paintedImage.zl.compress(to: originalImageData.count)
+
+                // Reduce the line width back to normal so the user can't see that anything changed.
+                drawPaths.forEach { path in
+                    path.path.lineWidth -= 10
+                    path.pathColor = ZLEditImageViewController.normalDrawColor
+                }
+                drawAllLines()
+            }
+            editModel = ZLEditImageModel(drawPaths: drawPaths, editRect: editRect, angle: angle)
         }
 
-        dismiss(animated: true) {
-            self.editFinishBlock?(resImage, editModel)
+        dismiss(animated: false) {
+            self.editFinishBlock?(self.editImage, editModel)
         }
     }
 
@@ -321,7 +340,7 @@ open class ZLEditImageViewController: UIViewController {
                 toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
             }
 
-            let path = ZLDrawPath(pathColor: currentDrawColor, pathWidth: drawLineWidth, ratio: ratio / originalRatio / toImageScale, startPoint: point)
+            let path = ZLDrawPath(pathColor: ZLEditImageViewController.normalDrawColor, pathWidth: drawLineWidth, ratio: ratio / originalRatio / toImageScale, startPoint: point)
             drawPaths.append(path)
             redoDrawPaths = drawPaths
         } else if pan.state == .changed {
@@ -382,18 +401,15 @@ open class ZLEditImageViewController: UIViewController {
         return UIImage(cgImage: cgi, scale: editImage.scale, orientation: .up)
     }
 
+
 }
 
 
 extension ZLEditImageViewController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer is UITapGestureRecognizer {
-            if bottomShadowView.alpha == 1 {
-                let p = gestureRecognizer.location(in: view)
-                return !bottomShadowView.frame.contains(p)
-            } else {
-                return true
-            }
+            let p = gestureRecognizer.location(in: view)
+            return !bottomShadowView.frame.contains(p)
         } else if gestureRecognizer is UIPanGestureRecognizer {
             return !isScrolling
         }
@@ -420,22 +436,18 @@ extension ZLEditImageViewController: UIScrollViewDelegate {
     }
 
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == mainScrollView else { return }
-        isScrolling = true
+        isScrolling = false
     }
 
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        guard scrollView == mainScrollView else { return }
         isScrolling = decelerate
     }
 
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        guard scrollView == mainScrollView else { return }
         isScrolling = false
     }
 
     public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        guard scrollView == mainScrollView else { return }
         isScrolling = false
     }
 }
@@ -443,7 +455,7 @@ extension ZLEditImageViewController: UIScrollViewDelegate {
 
 // MARK: Draw path
 public class ZLDrawPath: NSObject {
-    let pathColor: UIColor
+    var pathColor: UIColor
     let path: UIBezierPath
     let ratio: CGFloat
     let shapeLayer: CAShapeLayer
