@@ -58,7 +58,7 @@ class ViewController: UIViewController {
         self.resultImageView.snp.makeConstraints { (make) in
             make.top.equalTo(self.pickImageBtn.snp.bottom).offset(spacing)
             make.left.right.equalTo(self.view)
-            make.bottom.equalTo(self.view.snp.bottomMargin)
+            make.bottom.equalTo(self.view.snp.bottomMargin).offset(-140)
         }
 
         let control = UIControl()

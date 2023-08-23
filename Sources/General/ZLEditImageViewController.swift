@@ -18,8 +18,9 @@ public class ZLEditImageModel: NSObject {
 open class ZLEditImageViewController: UIViewController {
 
     var originalImage: UIImage
+    var editedImage: UIImage
     var editRect: CGRect
-    var editImage: UIImage
+
     static let normalDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
     static let maxDrawLineImageWidth: CGFloat = 600
     static let minimumZoomScale: CGFloat = 0.9
@@ -58,8 +59,22 @@ open class ZLEditImageViewController: UIViewController {
         return view
     }()
 
-    open lazy var bottomShadowView = UIView()
+    // Show draw lines.
+    lazy var drawingImageView: UIImageView = {
+        let view = UIImageView()
+        view.contentMode = .scaleAspectFit
+        view.isUserInteractionEnabled = true
+        return view
+    }()
 
+    var imageSize: CGSize {
+        if angle == -90 || angle == -270 {
+            return CGSize(width: originalImage.size.height, height: originalImage.size.width)
+        }
+        return originalImage.size
+    }
+
+    open lazy var bottomShadowView = UIView()
 
     open lazy var doneBtn: UIButton = {
         let btn = UIButton(type: .custom)
@@ -75,7 +90,6 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var undoBtn: UIButton = {
         let btn = UIButton(type: .custom)
-
         btn.setImage(UIImage(named: "zl_revoke_disable"), for: .disabled)
         btn.setImage(UIImage(named: "zl_revoke"), for: .normal)
         btn.adjustsImageWhenHighlighted = false
@@ -94,20 +108,11 @@ open class ZLEditImageViewController: UIViewController {
         return btn
     }()
 
-    // Show draw lines.
-    lazy var drawingImageView: UIImageView = {
-        let view = UIImageView()
-        view.contentMode = .scaleAspectFit
-        view.isUserInteractionEnabled = true
-        return view
-    }()
+/*    open lazy var zoomerImageView: UIImageView = {
+        let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 2) - 60, y: 60, width: 60, height: 60))
+        return zoomerView
+    }()*/
 
-    var imageSize: CGSize {
-        if angle == -90 || angle == -270 {
-            return CGSize(width: originalImage.size.height, height: originalImage.size.width)
-        }
-        return originalImage.size
-    }
 
     @objc public var editFinishBlock: ((UIImage, ZLEditImageModel?) -> Void)?
 
@@ -131,7 +136,7 @@ open class ZLEditImageViewController: UIViewController {
 
     @objc public init(image: UIImage, editModel: ZLEditImageModel? = nil) {
         originalImage = image.zl.fixOrientation()
-        editImage = originalImage
+        editedImage = originalImage
         editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
         drawPaths = editModel?.drawPaths ?? []
         redoDrawPaths = drawPaths
@@ -182,7 +187,7 @@ open class ZLEditImageViewController: UIViewController {
 
     func resetContainerViewFrame() {
         mainScrollView.setZoomScale(1, animated: true)
-        imageView.image = editImage
+        imageView.image = editedImage
 
         let editSize = editRect.size
         let scrollViewSize = mainScrollView.frame.size
@@ -215,11 +220,11 @@ open class ZLEditImageViewController: UIViewController {
 
     func setupUI() {
         view.backgroundColor = .black
-
         view.addSubview(mainScrollView)
         mainScrollView.addSubview(containerView)
         containerView.addSubview(imageView)
         containerView.addSubview(drawingImageView)
+        //containerView.addSubview(zoomerImageView)
 
         view.addSubview(bottomShadowView)
         bottomShadowView.addSubview(doneBtn)
@@ -267,18 +272,17 @@ open class ZLEditImageViewController: UIViewController {
                 }
                 drawAllLines()
 
-
-                // Create maskImage and initialize it to all black.
+                // Set editedImage to all black.
                 let imageSize = originalImage.size
                 let color: UIColor = .black
                 UIGraphicsBeginImageContextWithOptions(imageSize, true, 0)
                 let context = UIGraphicsGetCurrentContext()!
                 color.setFill()
                 context.fill(CGRect(x: 0, y: 0, width: imageSize.width, height: imageSize.height))
-                editImage = UIGraphicsGetImageFromCurrentImageContext()!
+                editedImage = UIGraphicsGetImageFromCurrentImageContext()!
                 UIGraphicsEndImageContext()
 
-                editImage = buildImage()
+                editedImage = buildImage()
                 //paintedImage = paintedImage.zl.compress(to: originalImageData.count)
 
                 // Reduce the line width back to normal so the user can't see that anything changed.
@@ -292,7 +296,7 @@ open class ZLEditImageViewController: UIViewController {
         }
 
         dismiss(animated: false) {
-            self.editFinishBlock?(self.editImage, editModel)
+            self.editFinishBlock?(self.editedImage, editModel)
         }
     }
 
@@ -336,7 +340,7 @@ open class ZLEditImageViewController: UIViewController {
             }
 
             var toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.width
-            if editImage.size.width / editImage.size.height > 1 {
+            if editedImage.size.width / editedImage.size.height > 1 {
                 toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
             }
 
@@ -354,6 +358,7 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
+    // Draw lines to editedImage, and also set the image to drawingImageView.
     func drawAllLines() {
         let originalRatio = min(mainScrollView.frame.width / originalImage.size.width, mainScrollView.frame.height / originalImage.size.height)
         let ratio = min(mainScrollView.frame.width / editRect.width, mainScrollView.frame.height / editRect.height)
@@ -366,13 +371,13 @@ open class ZLEditImageViewController: UIViewController {
             swap(&size.width, &size.height)
         }
         var toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.width
-        if editImage.size.width / editImage.size.height > 1 {
+        if editedImage.size.width / editedImage.size.height > 1 {
             toImageScale = ZLEditImageViewController.maxDrawLineImageWidth / size.height
         }
         size.width *= toImageScale
         size.height *= toImageScale
 
-        UIGraphicsBeginImageContextWithOptions(size, false, editImage.scale)
+        UIGraphicsBeginImageContextWithOptions(size, false, editedImage.scale)
         let context = UIGraphicsGetCurrentContext()
 
         context?.setAllowsAntialiasing(true)
@@ -381,6 +386,9 @@ open class ZLEditImageViewController: UIViewController {
             path.drawPath()
         }
         drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
+
+        //zoomerImageView.image = UIGraphicsGetImageFromCurrentImageContext()
+
         UIGraphicsEndImageContext()
     }
 
@@ -388,19 +396,18 @@ open class ZLEditImageViewController: UIViewController {
     func buildImage() -> UIImage {
         let imageSize = originalImage.size
 
-        UIGraphicsBeginImageContextWithOptions(editImage.size, false, editImage.scale)
-        editImage.draw(at: .zero)
+        UIGraphicsBeginImageContextWithOptions(editedImage.size, false, editedImage.scale)
+        editedImage.draw(at: .zero)
 
         drawingImageView.image?.draw(in: CGRect(origin: .zero, size: imageSize))
 
         let temp = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         guard let cgi = temp?.cgImage else {
-            return editImage
+            return editedImage
         }
-        return UIImage(cgImage: cgi, scale: editImage.scale, orientation: .up)
+        return UIImage(cgImage: cgi, scale: editedImage.scale, orientation: .up)
     }
-
 
 }
 

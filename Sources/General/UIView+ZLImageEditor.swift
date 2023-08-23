@@ -1,5 +1,3 @@
-
-
 import UIKit
 
 extension ZLImageEditorWrapper where Base: UIView {
