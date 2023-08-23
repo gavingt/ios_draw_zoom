@@ -22,6 +22,7 @@ open class ZLEditImageViewController: UIViewController {
     var editImage: UIImage
     var currentDrawColor = UIColor(red: 0, green: 0.137, blue: 0.89, alpha: 0.26)
     static let maxDrawLineImageWidth: CGFloat = 600
+    static let minimumZoomScale: CGFloat = 1
 
     var drawPaths: [ZLDrawPath]
     var redoDrawPaths: [ZLDrawPath]
@@ -36,7 +37,7 @@ open class ZLEditImageViewController: UIViewController {
     open lazy var mainScrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = .black
-        view.minimumZoomScale = 1
+        view.minimumZoomScale = ZLEditImageViewController.minimumZoomScale
         view.maximumZoomScale = 3
         view.delegate = self
         return view
@@ -158,6 +159,7 @@ open class ZLEditImageViewController: UIViewController {
         insets = self.view.safeAreaInsets
 
         mainScrollView.frame = view.bounds
+
         resetContainerViewFrame()
 
         bottomShadowView.frame = CGRect(x: 0, y: view.zl.height - 140 - insets.bottom, width: view.zl.width, height: 140 + insets.bottom)
@@ -170,6 +172,8 @@ open class ZLEditImageViewController: UIViewController {
         if !drawPaths.isEmpty {
             drawAllLines()
         }
+
+        mainScrollView.zoomScale = ZLEditImageViewController.minimumZoomScale
     }
 
     override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
