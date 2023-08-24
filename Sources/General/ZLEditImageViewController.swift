@@ -35,6 +35,11 @@ open class ZLEditImageViewController: UIViewController {
 
     var panGes: UIPanGestureRecognizer!
 
+    var lastPointTouched = CGPoint()
+    lazy var zoomerWidth: CGFloat = {
+        view.frame.width / 3
+    }()
+
     open lazy var mainScrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = .black
@@ -109,7 +114,7 @@ open class ZLEditImageViewController: UIViewController {
     }()
 
     open lazy var zoomerImageView: UIImageView = {
-        let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 2) - 60, y: 60, width: 60, height: 60))
+        let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 2) - 60, y: 60, width: view.frame.width / 3, height: view.frame.width / 3))
         return zoomerView
     }()
 
@@ -224,10 +229,10 @@ open class ZLEditImageViewController: UIViewController {
         mainScrollView.addSubview(containerView)
         containerView.addSubview(imageView)
         containerView.addSubview(drawingImageView)
-        containerView.addSubview(zoomerImageView)
 
         view.addSubview(bottomShadowView)
         bottomShadowView.addSubview(doneBtn)
+        view.addSubview(zoomerImageView)
 
         bottomShadowView.addSubview(undoBtn)
         bottomShadowView.addSubview(redoBtn)
@@ -327,6 +332,8 @@ open class ZLEditImageViewController: UIViewController {
 
     @objc func drawAction(_ pan: UIPanGestureRecognizer) {
         let point = pan.location(in: drawingImageView)
+        lastPointTouched = point
+
         if pan.state == .began {
             let originalRatio = min(mainScrollView.frame.width / originalImage.size.width, mainScrollView.frame.height / originalImage.size.height)
             let ratio = min(mainScrollView.frame.width / editRect.width, mainScrollView.frame.height / editRect.height)
@@ -382,29 +389,43 @@ open class ZLEditImageViewController: UIViewController {
 
         context?.setAllowsAntialiasing(true)
         context?.setShouldAntialias(true)
+
         for path in drawPaths {
             path.drawPath()
         }
 
-        // Determines the x,y coordinate of a centered sideLength by sideLength square
-        let sideLength: CGFloat = 60
-        let sourceSize = editedImage.size
-        let xOffset = (sourceSize.width - sideLength) / 2.0
-        let yOffset = (sourceSize.height - sideLength) / 2.0
-
-        // The cropRect is the rect of the image to keep,
-        // in this case centered
-        let cropRect = CGRect(x: xOffset, y: yOffset, width: sideLength, height: sideLength).integral
-
-
         let fullImage = UIGraphicsGetImageFromCurrentImageContext()
-
-        let croppedCgImage = fullImage!.cgImage!.cropping(to: cropRect)!
-        zoomerImageView.image = UIImage(cgImage: croppedCgImage)
-
-        drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
-
+        drawingImageView.image = fullImage
         UIGraphicsEndImageContext()
+
+
+        /*        let scaleFactor = 1 / mainScrollView.zoomScale
+        let x: CGFloat = mainScrollView.contentOffset.x * scaleFactor
+        let y:CGFloat = mainScrollView.contentOffset.y * scaleFactor
+        let width:CGFloat = mainScrollView.bounds.size.width * scaleFactor
+        let height:CGFloat = mainScrollView.bounds.size.height * scaleFactor*/
+
+        // The cropRect is the rect of the image to keep, in this case centered.
+        //let cropRect = CGRect(x: /*lastPointTouched.x + (zoomerWidth / 2), y: lastPointTouched.y + (zoomerWidth / 2)*/view.frame.width / 2, y: view.frame.height / 2, width: zoomerWidth, height: zoomerWidth)
+        //let cropRect = CGRect(x: lastPointTouched.x, y: lastPointTouched.y, width: zoomerWidth * imageViewScale, height: zoomerWidth * imageViewScale)
+        //print(cropRect)
+
+        //let snapshotView = mainScrollView.resizableSnapshotView(from: cropRect, afterScreenUpdates: true, withCapInsets: .zero)!
+        //let zoomerCgImage = fullImage!.cgImage!.cropping(to: cropRect)!
+        //zoomerImageView.image = UIImage(cgImage: zoomerCgImage)
+        //let snapshotImage = view.snapshot(scrollView: mainScrollView)!
+        //zoomerImageView.image = snapshotImage
+        /*
+        UIGraphicsBeginImageContextWithOptions(CGSizeMake(100,150), false, 0)
+        self.view.drawHierarchy(in: CGRectMake(-50,-50,view.bounds.size.width,view.bounds.size.height), afterScreenUpdates: true)
+        var image = UIGraphicsGetImageFromCurrentImageContext()
+        zoomerImageView.image = image*/
+
+
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: zoomerWidth, height: zoomerWidth), false, 0)
+        view.drawHierarchy(in: CGRectMake(-lastPointTouched.x, -lastPointTouched.y, view.bounds.size.width, view.bounds.size.height), afterScreenUpdates: true)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        zoomerImageView.image = image
     }
 
 
