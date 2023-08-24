@@ -81,7 +81,7 @@ class ViewController: UIViewController {
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         fetchOptions.includeAssetSourceTypes = [.typeUserLibrary, .typeiTunesSynced]
         let photosNotInAlbumsFetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
-        let phAssetToEdit = photosNotInAlbumsFetchResult.object(at: 6)
+        let phAssetToEdit = photosNotInAlbumsFetchResult.object(at: 0)
 
         let options = PHImageRequestOptions()
         options.isSynchronous = true

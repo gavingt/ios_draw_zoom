@@ -9,16 +9,12 @@
 /* Begin PBXBuildFile section */
 		2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */; };
 		2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */; };
-		2C6A981F84AEBDABACD742A7 /* UIScrollView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A90B0F3C92EAA39FA5C84 /* UIScrollView+Extensions.swift */; };
 		2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */; };
-		2C6A9E3108911C904235FB62 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A96EC248615E7762C56EB /* UIView+Extensions.swift */; };
 		E40208DC256B9BA60077F5DC /* ZLImageEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = E40208DA256B9BA60077F5DC /* ZLImageEditor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E40208EB256B9F9C0077F5DC /* ZLEditImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40208E4256B9F9C0077F5DC /* ZLEditImageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2C6A90B0F3C92EAA39FA5C84 /* UIScrollView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Extensions.swift"; sourceTree = "<group>"; };
-		2C6A96EC248615E7762C56EB /* UIView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZLImageEditor.swift; sourceTree = "<group>"; };
@@ -72,8 +68,6 @@
 				2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */,
 				2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */,
 				2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */,
-				2C6A96EC248615E7762C56EB /* UIView+Extensions.swift */,
-				2C6A90B0F3C92EAA39FA5C84 /* UIScrollView+Extensions.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -161,8 +155,6 @@
 				2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */,
 				2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */,
 				2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */,
-				2C6A9E3108911C904235FB62 /* UIView+Extensions.swift in Sources */,
-				2C6A981F84AEBDABACD742A7 /* UIScrollView+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
