@@ -423,7 +423,7 @@ open class ZLEditImageViewController: UIViewController {
 
 
         UIGraphicsBeginImageContextWithOptions(CGSize(width: zoomerWidth, height: zoomerWidth), false, 0)
-        view.drawHierarchy(in: CGRectMake(-lastPointTouched.x, -lastPointTouched.y, view.bounds.size.width, view.bounds.size.height), afterScreenUpdates: true)
+        view.drawHierarchy(in: CGRectMake(-(lastPointTouched.x - zoomerWidth / 2), -(lastPointTouched.y + zoomerWidth / 2), view.bounds.size.width, view.bounds.size.height), afterScreenUpdates: true)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         zoomerImageView.image = image
     }
