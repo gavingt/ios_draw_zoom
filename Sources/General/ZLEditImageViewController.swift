@@ -108,10 +108,10 @@ open class ZLEditImageViewController: UIViewController {
         return btn
     }()
 
-/*    open lazy var zoomerImageView: UIImageView = {
+    open lazy var zoomerImageView: UIImageView = {
         let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 2) - 60, y: 60, width: 60, height: 60))
         return zoomerView
-    }()*/
+    }()
 
 
     @objc public var editFinishBlock: ((UIImage, ZLEditImageModel?) -> Void)?
@@ -224,7 +224,7 @@ open class ZLEditImageViewController: UIViewController {
         mainScrollView.addSubview(containerView)
         containerView.addSubview(imageView)
         containerView.addSubview(drawingImageView)
-        //containerView.addSubview(zoomerImageView)
+        containerView.addSubview(zoomerImageView)
 
         view.addSubview(bottomShadowView)
         bottomShadowView.addSubview(doneBtn)
@@ -385,9 +385,24 @@ open class ZLEditImageViewController: UIViewController {
         for path in drawPaths {
             path.drawPath()
         }
-        drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
 
-        //zoomerImageView.image = UIGraphicsGetImageFromCurrentImageContext()
+        // Determines the x,y coordinate of a centered sideLength by sideLength square
+        let sideLength: CGFloat = 60
+        let sourceSize = editedImage.size
+        let xOffset = (sourceSize.width - sideLength) / 2.0
+        let yOffset = (sourceSize.height - sideLength) / 2.0
+
+        // The cropRect is the rect of the image to keep,
+        // in this case centered
+        let cropRect = CGRect(x: xOffset, y: yOffset, width: sideLength, height: sideLength).integral
+
+
+        let fullImage = UIGraphicsGetImageFromCurrentImageContext()
+
+        let croppedCgImage = fullImage!.cgImage!.cropping(to: cropRect)!
+        zoomerImageView.image = UIImage(cgImage: croppedCgImage)
+
+        drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
 
         UIGraphicsEndImageContext()
     }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2C6A9007B7032B8D57062738 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A93B05D6C10423BBFAECD /* UIView+Extensions.swift */; };
 		2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */; };
 		2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */; };
 		2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */; };
@@ -16,7 +15,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2C6A93B05D6C10423BBFAECD /* UIView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZLImageEditor.swift; sourceTree = "<group>"; };
@@ -70,7 +68,6 @@
 				2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */,
 				2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */,
 				2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */,
-				2C6A93B05D6C10423BBFAECD /* UIView+Extensions.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -158,7 +155,6 @@
 				2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */,
 				2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */,
 				2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */,
-				2C6A9007B7032B8D57062738 /* UIView+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
