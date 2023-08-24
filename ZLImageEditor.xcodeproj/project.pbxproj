@@ -9,15 +9,21 @@
 /* Begin PBXBuildFile section */
 		2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */; };
 		2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */; };
+		2C6A9B6D348742F428021D23 /* MagnifyingGlass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9A360C490399F534FE58 /* MagnifyingGlass.swift */; };
 		2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */; };
+		C815100A101D3802AD7437A6 /* Pods_ZLImageEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D56CE10BD95974A17470E55 /* Pods_ZLImageEditor.framework */; };
 		E40208DC256B9BA60077F5DC /* ZLImageEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = E40208DA256B9BA60077F5DC /* ZLImageEditor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E40208EB256B9F9C0077F5DC /* ZLEditImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40208E4256B9F9C0077F5DC /* ZLEditImageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D56CE10BD95974A17470E55 /* Pods_ZLImageEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZLImageEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2C6A9A360C490399F534FE58 /* MagnifyingGlass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MagnifyingGlass.swift; sourceTree = "<group>"; };
 		2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZLImageEditor.swift; sourceTree = "<group>"; };
+		37C27A3CF1AE3364ECFC9E1E /* Pods-ZLImageEditor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZLImageEditor.release.xcconfig"; path = "Target Support Files/Pods-ZLImageEditor/Pods-ZLImageEditor.release.xcconfig"; sourceTree = "<group>"; };
+		600D1638302EB423C2852A16 /* Pods-ZLImageEditor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZLImageEditor.debug.xcconfig"; path = "Target Support Files/Pods-ZLImageEditor/Pods-ZLImageEditor.debug.xcconfig"; sourceTree = "<group>"; };
 		E40208D7256B9BA60077F5DC /* ZLImageEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZLImageEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E40208DA256B9BA60077F5DC /* ZLImageEditor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZLImageEditor.h; sourceTree = "<group>"; };
 		E40208DB256B9BA60077F5DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -29,17 +35,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C815100A101D3802AD7437A6 /* Pods_ZLImageEditor.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A0138DEFFA26388DA9B5C28 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				600D1638302EB423C2852A16 /* Pods-ZLImageEditor.debug.xcconfig */,
+				37C27A3CF1AE3364ECFC9E1E /* Pods-ZLImageEditor.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		E40208CD256B9BA60077F5DC = {
 			isa = PBXGroup;
 			children = (
 				E40208D9256B9BA60077F5DC /* Sources */,
 				E40208D8256B9BA60077F5DC /* Products */,
+				5A0138DEFFA26388DA9B5C28 /* Pods */,
+				F05F796F344A215A10EFD45A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -68,8 +86,17 @@
 				2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */,
 				2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */,
 				2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */,
+				2C6A9A360C490399F534FE58 /* MagnifyingGlass.swift */,
 			);
 			path = General;
+			sourceTree = "<group>";
+		};
+		F05F796F344A215A10EFD45A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1D56CE10BD95974A17470E55 /* Pods_ZLImageEditor.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,6 +117,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = E40208DF256B9BA60077F5DC /* Build configuration list for PBXNativeTarget "ZLImageEditor" */;
 			buildPhases = (
+				6969E393F5F7B3D86FB41505 /* [CP] Check Pods Manifest.lock */,
 				E40208D2256B9BA60077F5DC /* Headers */,
 				E40208D3256B9BA60077F5DC /* Sources */,
 				E40208D4256B9BA60077F5DC /* Frameworks */,
@@ -146,6 +174,31 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		6969E393F5F7B3D86FB41505 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ZLImageEditor-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		E40208D3256B9BA60077F5DC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -155,6 +208,7 @@
 				2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */,
 				2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */,
 				2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */,
+				2C6A9B6D348742F428021D23 /* MagnifyingGlass.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,6 +339,7 @@
 		};
 		E40208E0256B9BA60077F5DC /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 600D1638302EB423C2852A16 /* Pods-ZLImageEditor.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -313,6 +368,7 @@
 		};
 		E40208E1256B9BA60077F5DC /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 37C27A3CF1AE3364ECFC9E1E /* Pods-ZLImageEditor.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";

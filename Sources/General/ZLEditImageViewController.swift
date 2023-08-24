@@ -115,8 +115,19 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var zoomerImageView: UIImageView = {
         let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 3), y: 60, width: view.frame.width / 3, height: view.frame.width / 3))
+        zoomerView.backgroundColor = .gray
         return zoomerView
     }()
+
+    open var magnifyingGlassView = MagnifyingGlassView(
+            offset: CGPoint.zero,
+            radius: 50.0,
+            scale: 2.0,
+            borderColor: UIColor.lightGray,
+            borderWidth: 3.0,
+            showsCrosshair: true,
+            crosshairColor: UIColor.lightGray,
+            crosshairWidth: 0.5)
 
 
     @objc public var editFinishBlock: ((UIImage, ZLEditImageModel?) -> Void)?
@@ -398,12 +409,11 @@ open class ZLEditImageViewController: UIViewController {
         drawingImageView.image = fullImage
         UIGraphicsEndImageContext()
 
-
-        // TODO: This needs to account for zoomScale.
         UIGraphicsBeginImageContextWithOptions(CGSize(width: zoomerWindowWidth, height: zoomerWindowWidth), false, 0)
+        lastPointTouched = view.convert(self.lastPointTouched, from: drawingImageView)
         let cropRect = CGRect(
                 x: -(lastPointTouched.x - zoomerWindowWidth / 2),
-                y: -(lastPointTouched.y + zoomerWindowWidth / 2),
+                y: -(lastPointTouched.y - zoomerWindowWidth / 2),
                 width: view.bounds.size.width,
                 height: view.bounds.size.height
         )
