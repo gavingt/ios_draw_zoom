@@ -82,6 +82,15 @@ open class ZLEditImageViewController: UIViewController {
         return btn
     }()
 
+    open lazy var brushSizeButton: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(named: "ic_brush_size"), for: .normal)
+        btn.tintColor = .white
+        btn.adjustsImageWhenHighlighted = false
+        btn.addTarget(self, action: #selector(brushSizeButtonClick), for: .touchUpInside)
+        return btn
+    }()
+
     open lazy var undoButton: UIButton = {
         let btn = UIButton(type: .custom)
         btn.setImage(UIImage(named: "zl_revoke_disable"), for: .disabled)
@@ -99,14 +108,6 @@ open class ZLEditImageViewController: UIViewController {
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
         btn.addTarget(self, action: #selector(redoButtonClick), for: .touchUpInside)
-        return btn
-    }()
-
-    open lazy var brushSizeButton: UIButton = {
-        let btn = UIButton(type: .custom)
-        btn.setImage(UIImage(named: "zl_redo"), for: .normal)
-        btn.adjustsImageWhenHighlighted = false
-        btn.addTarget(self, action: #selector(brushSizeButtonClick), for: .touchUpInside)
         return btn
     }()
 
@@ -198,9 +199,9 @@ open class ZLEditImageViewController: UIViewController {
 
         let insets = view.safeAreaInsets
         topToolbarView.frame = CGRect(x: 0, y: 0, width: view.zl.width, height: 100 + insets.top)
-        redoButton.frame = CGRect(x: view.frame.width - 8 - 48, y: insets.top + 8, width: 48, height: 48)
-        undoButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
-        brushSizeButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
+        brushSizeButton.frame = CGRect(x: view.frame.width - 8 - 48, y: insets.top + 8, width: 48, height: 48)
+        redoButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
+        undoButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
         doneButton.frame = CGRect(x: view.frame.width - 20 - 48 - 48 - 48 - 100, y: insets.top + 8, width: 100, height: 48)
 
         if !drawPaths.isEmpty {
