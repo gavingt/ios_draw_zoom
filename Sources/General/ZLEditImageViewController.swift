@@ -1,20 +1,5 @@
 import UIKit
 
-public class ZLEditImageModel: NSObject {
-
-    public let drawPaths: [ZLDrawPath]
-    public let editRect: CGRect?
-    public let angle: CGFloat
-
-    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat) {
-        self.drawPaths = drawPaths
-        self.editRect = editRect
-        self.angle = angle
-        super.init()
-    }
-}
-
-
 open class ZLEditImageViewController: UIViewController {
 
     var originalImage: UIImage
@@ -34,7 +19,7 @@ open class ZLEditImageViewController: UIViewController {
     var shouldLayout = true
     var angle: CGFloat
 
-    var panGes: UIPanGestureRecognizer!
+    var panGestureRecognizer: UIPanGestureRecognizer!
 
     var lastPointTouched = CGPoint()
 
@@ -45,6 +30,7 @@ open class ZLEditImageViewController: UIViewController {
         view.frame.width / 3
     }()
 
+    // Child of view.
     open lazy var mainScrollView: UIScrollView = {
         let view = UIScrollView()
         view.backgroundColor = .black
@@ -54,13 +40,14 @@ open class ZLEditImageViewController: UIViewController {
         return view
     }()
 
+    // Only child of mainScrollView.
     open lazy var containerView: UIView = {
         let view = UIView()
         view.clipsToBounds = true
         return view
     }()
 
-    // Show image.
+    // Child of containerView that shows the original image.
     open lazy var imageView: UIImageView = {
         let view = UIImageView(image: originalImage)
         view.contentMode = .scaleAspectFit
@@ -69,7 +56,7 @@ open class ZLEditImageViewController: UIViewController {
         return view
     }()
 
-    // Show draw lines.
+    // Child of containerView that shows the drawing.
     lazy var drawingImageView: UIImageView = {
         let view = UIImageView()
         view.contentMode = .scaleAspectFit
@@ -77,44 +64,49 @@ open class ZLEditImageViewController: UIViewController {
         return view
     }()
 
-    var imageSize: CGSize {
-        if angle == -90 || angle == -270 {
-            return CGSize(width: originalImage.size.height, height: originalImage.size.width)
-        }
-        return originalImage.size
-    }
+    open lazy var topToolbarView: UIView = {
+       let toolbarView = UIView()
+        toolbarView.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5)
+        return toolbarView
+    }()
 
-    open lazy var bottomShadowView = UIView()
-
-    open lazy var doneBtn: UIButton = {
+    open lazy var doneButton: UIButton = {
         let btn = UIButton(type: .custom)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 17)
         btn.backgroundColor = .green
         btn.setTitle("Done", for: .normal)
         btn.setTitleColor(.white, for: .normal)
-        btn.addTarget(self, action: #selector(doneBtnClick), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(doneButtonClick), for: .touchUpInside)
         btn.layer.masksToBounds = true
         btn.layer.cornerRadius = 5
         return btn
     }()
 
-    open lazy var undoBtn: UIButton = {
+    open lazy var undoButton: UIButton = {
         let btn = UIButton(type: .custom)
         btn.setImage(UIImage(named: "zl_revoke_disable"), for: .disabled)
         btn.setImage(UIImage(named: "zl_revoke"), for: .normal)
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
-        btn.addTarget(self, action: #selector(undoBtnClick), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(undoButtonClick), for: .touchUpInside)
         return btn
     }()
 
-    open lazy var redoBtn: UIButton = {
+    open lazy var redoButton: UIButton = {
         let btn = UIButton(type: .custom)
         btn.setImage(UIImage(named: "zl_redo_disable"), for: .disabled)
         btn.setImage(UIImage(named: "zl_redo"), for: .normal)
         btn.adjustsImageWhenHighlighted = false
         btn.isEnabled = false
-        btn.addTarget(self, action: #selector(redoBtnClick), for: .touchUpInside)
+        btn.addTarget(self, action: #selector(redoButtonClick), for: .touchUpInside)
+        return btn
+    }()
+
+    open lazy var brushSizeButton: UIButton = {
+        let btn = UIButton(type: .custom)
+        btn.setImage(UIImage(named: "zl_redo"), for: .normal)
+        btn.adjustsImageWhenHighlighted = false
+        btn.addTarget(self, action: #selector(brushSizeButtonClick), for: .touchUpInside)
         return btn
     }()
 
@@ -168,32 +160,54 @@ open class ZLEditImageViewController: UIViewController {
 
     override open func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        rotationImageView()
+
+        view.backgroundColor = .black
+        view.addSubview(mainScrollView)
+        mainScrollView.addSubview(containerView)
+        containerView.addSubview(imageView)
+        containerView.addSubview(drawingImageView)
+
+        view.addSubview(topToolbarView)
+        topToolbarView.addSubview(doneButton)
+        view.addSubview(zoomerImageView)
+
+        topToolbarView.addSubview(undoButton)
+        topToolbarView.addSubview(redoButton)
+        topToolbarView.addSubview(brushSizeButton)
+
+        let tapGes = UITapGestureRecognizer(target: self, action: #selector(tapAction(_:)))
+        tapGes.delegate = self
+        view.addGestureRecognizer(tapGes)
+
+        panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(drawAction(_:)))
+        panGestureRecognizer.maximumNumberOfTouches = 1
+        panGestureRecognizer.delegate = self
+        view.addGestureRecognizer(panGestureRecognizer)
+        mainScrollView.panGestureRecognizer.require(toFail: panGestureRecognizer)
+
+        rotateImageView()
     }
 
     override open func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         guard shouldLayout else { return }
-
         shouldLayout = false
-        var insets = UIEdgeInsets.zero
-        insets = view.safeAreaInsets
 
         mainScrollView.frame = view.bounds
-
         resetContainerViewFrame()
 
-        bottomShadowView.frame = CGRect(x: 0, y: view.zl.height - 140 - insets.bottom, width: view.zl.width, height: 140 + insets.bottom)
-
-        redoBtn.frame = CGRect(x: view.zl.width - 15 - 35, y: 30, width: 35, height: 30)
-        undoBtn.frame = CGRect(x: redoBtn.zl.left - 10 - 35, y: 30, width: 35, height: 30)
-        doneBtn.frame = CGRect(x: 20, y: 83, width: view.frame.width - 40, height: 40)
+        let insets = view.safeAreaInsets
+        topToolbarView.frame = CGRect(x: 0, y: 0, width: view.zl.width, height: 100 + insets.top)
+        redoButton.frame = CGRect(x: view.frame.width - 8 - 48, y: insets.top + 8, width: 48, height: 48)
+        undoButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
+        brushSizeButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
+        doneButton.frame = CGRect(x: view.frame.width - 20 - 48 - 48 - 48 - 100, y: insets.top + 8, width: 100, height: 48)
 
         if !drawPaths.isEmpty {
             drawAllLines()
         }
     }
+
 
     override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
@@ -215,7 +229,7 @@ open class ZLEditImageViewController: UIViewController {
         containerView.layer.mask = nil
 
         let scaleImageOrigin = CGPoint(x: -editRect.origin.x * ratio, y: -editRect.origin.y * ratio)
-        let scaleImageSize = CGSize(width: imageSize.width * ratio, height: imageSize.height * ratio)
+        let scaleImageSize = CGSize(width: originalImage.size.width * ratio, height: originalImage.size.height * ratio)
         imageView.frame = CGRect(origin: scaleImageOrigin, size: scaleImageSize)
         drawingImageView.frame = imageView.frame
 
@@ -233,33 +247,7 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
-    func setupUI() {
-        view.backgroundColor = .black
-        view.addSubview(mainScrollView)
-        mainScrollView.addSubview(containerView)
-        containerView.addSubview(imageView)
-        containerView.addSubview(drawingImageView)
-
-        view.addSubview(bottomShadowView)
-        bottomShadowView.addSubview(doneBtn)
-        view.addSubview(zoomerImageView)
-
-        bottomShadowView.addSubview(undoBtn)
-        bottomShadowView.addSubview(redoBtn)
-
-        let tapGes = UITapGestureRecognizer(target: self, action: #selector(tapAction(_:)))
-        tapGes.delegate = self
-        view.addGestureRecognizer(tapGes)
-
-        panGes = UIPanGestureRecognizer(target: self, action: #selector(drawAction(_:)))
-        panGes.maximumNumberOfTouches = 1
-        panGes.delegate = self
-        view.addGestureRecognizer(panGes)
-        mainScrollView.panGestureRecognizer.require(toFail: panGes)
-    }
-
-
-    func rotationImageView() {
+    func rotateImageView() {
         let transform = CGAffineTransform(rotationAngle: angle.zl.base / 180 * .pi)
         imageView.transform = transform
         drawingImageView.transform = transform
@@ -271,9 +259,9 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
-    @objc func doneBtnClick() {
+    @objc func doneButtonClick() {
         var hasEdit = true
-        if drawPaths.isEmpty, editRect.size == imageSize, angle == 0 {
+        if drawPaths.isEmpty, angle == 0 {
             hasEdit = false
         }
 
@@ -316,22 +304,26 @@ open class ZLEditImageViewController: UIViewController {
     }
 
 
-    @objc func undoBtnClick() {
+    @objc func undoButtonClick() {
         guard !drawPaths.isEmpty else { return }
         drawPaths.removeLast()
-        undoBtn.isEnabled = !drawPaths.isEmpty
-        redoBtn.isEnabled = drawPaths.count != redoDrawPaths.count
+        undoButton.isEnabled = !drawPaths.isEmpty
+        redoButton.isEnabled = drawPaths.count != redoDrawPaths.count
         drawAllLines()
     }
 
 
-    @objc func redoBtnClick() {
+    @objc func redoButtonClick() {
         guard drawPaths.count < redoDrawPaths.count else { return }
         let path = redoDrawPaths[drawPaths.count]
         drawPaths.append(path)
-        undoBtn.isEnabled = !drawPaths.isEmpty
-        redoBtn.isEnabled = drawPaths.count != redoDrawPaths.count
+        undoButton.isEnabled = !drawPaths.isEmpty
+        redoButton.isEnabled = drawPaths.count != redoDrawPaths.count
         drawAllLines()
+    }
+
+    @objc func brushSizeButtonClick() {
+
     }
 
 
@@ -372,8 +364,8 @@ open class ZLEditImageViewController: UIViewController {
             drawAllLines()
         } else if pan.state == .cancelled || pan.state == .ended {
             isDrawing = false
-            undoBtn.isEnabled = !drawPaths.isEmpty
-            redoBtn.isEnabled = false
+            undoButton.isEnabled = !drawPaths.isEmpty
+            redoButton.isEnabled = false
             zoomerImageView.isHidden = true
         }
     }
@@ -423,7 +415,7 @@ open class ZLEditImageViewController: UIViewController {
         // Draw mainScrollView to the blank bitmap context. This draws just the desired content to the bitmap and discards the rest.
         mainScrollView.drawHierarchy(in: cropRect, afterScreenUpdates: true)
 
-        // Get the current context and draw small circular cursor in middle of zoomer.
+        // Draw small circular cursor in middle of zoomer.
         let context = UIGraphicsGetCurrentContext()!
         context.setStrokeColor(UIColor.lightGray.cgColor)
         context.setAlpha(0.4)
@@ -481,7 +473,7 @@ extension ZLEditImageViewController: UIGestureRecognizerDelegate {
     public func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer is UITapGestureRecognizer {
             let p = gestureRecognizer.location(in: view)
-            return !bottomShadowView.frame.contains(p)
+            return !topToolbarView.frame.contains(p)
         } else if gestureRecognizer is UIPanGestureRecognizer {
             return !isScrolling
         }
@@ -493,7 +485,7 @@ extension ZLEditImageViewController: UIGestureRecognizerDelegate {
 
 // MARK: scroll view delegate
 extension ZLEditImageViewController: UIScrollViewDelegate {
-    public func viewForZooming(in scrollView: UIScrollView) -> UIView {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         containerView
     }
 
@@ -560,5 +552,19 @@ public class ZLDrawPath: NSObject {
     func drawPath() {
         pathColor.set()
         path.stroke()
+    }
+}
+
+
+public class ZLEditImageModel: NSObject {
+    public let drawPaths: [ZLDrawPath]
+    public let editRect: CGRect?
+    public let angle: CGFloat
+
+    public init(drawPaths: [ZLDrawPath], editRect: CGRect?, angle: CGFloat) {
+        self.drawPaths = drawPaths
+        self.editRect = editRect
+        self.angle = angle
+        super.init()
     }
 }
