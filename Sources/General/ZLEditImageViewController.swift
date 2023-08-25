@@ -39,6 +39,7 @@ open class ZLEditImageViewController: UIViewController {
     var lastPointTouched = CGPoint()
 
     var zoomerMargin: CGFloat = 60
+    var zoomerCursorDiameter: CGFloat = 14
 
     lazy var zoomerWindowDiameter: CGFloat = {
         view.frame.width / 3
@@ -421,6 +422,15 @@ open class ZLEditImageViewController: UIViewController {
         let cropRect = CGRect(x: -(lastPointTouched.x - zoomerWindowDiameter / 2), y: -(lastPointTouched.y - zoomerWindowDiameter / 2), width: view.bounds.size.width, height: view.bounds.size.height)
         // Draw mainScrollView to the blank bitmap context. This draws just the desired content to the bitmap and discards the rest.
         mainScrollView.drawHierarchy(in: cropRect, afterScreenUpdates: true)
+
+        // Get the current context and draw small circular cursor in middle of zoomer.
+        let context = UIGraphicsGetCurrentContext()!
+        context.setStrokeColor(UIColor.lightGray.cgColor)
+        context.setAlpha(0.4)
+        context.setLineWidth(1.5)
+        context.addEllipse(in: CGRect(x: (zoomerWindowDiameter / 2) - (zoomerCursorDiameter / 2), y: (zoomerWindowDiameter / 2) - (zoomerCursorDiameter / 2), width: zoomerCursorDiameter, height: zoomerCursorDiameter))
+        context.drawPath(using: .stroke)
+
         // Fetch bitmap from context.
         zoomerImageView.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -483,7 +493,7 @@ extension ZLEditImageViewController: UIGestureRecognizerDelegate {
 
 // MARK: scroll view delegate
 extension ZLEditImageViewController: UIScrollViewDelegate {
-    public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+    public func viewForZooming(in scrollView: UIScrollView) -> UIView {
         containerView
     }
 
