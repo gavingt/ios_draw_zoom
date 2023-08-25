@@ -29,6 +29,7 @@ open class ZLEditImageViewController: UIViewController {
     var redoDrawPaths: [ZLDrawPath]
     var drawLineWidth: CGFloat = 10
 
+    var isDrawing = false
     var isScrolling = false
     var shouldLayout = true
     var angle: CGFloat
@@ -36,7 +37,8 @@ open class ZLEditImageViewController: UIViewController {
     var panGes: UIPanGestureRecognizer!
 
     var lastPointTouched = CGPoint()
-    lazy var zoomerWindowWidth: CGFloat = {
+
+    lazy var zoomerWindowDiameter: CGFloat = {
         view.frame.width / 3
     }()
 
@@ -121,6 +123,7 @@ open class ZLEditImageViewController: UIViewController {
         zoomerView.layer.borderColor = UIColor.lightGray.cgColor
         zoomerView.layer.cornerRadius = zoomerView.frame.size.width / 2
         zoomerView.clipsToBounds = true
+        zoomerView.isHidden = true
         return zoomerView
     }()
 
@@ -340,6 +343,7 @@ open class ZLEditImageViewController: UIViewController {
         lastPointTouched = point
 
         if pan.state == .began {
+            isDrawing = true
             let originalRatio = min(mainScrollView.frame.width / originalImage.size.width, mainScrollView.frame.height / originalImage.size.height)
             let ratio = min(mainScrollView.frame.width / editRect.width, mainScrollView.frame.height / editRect.height)
             let scale = ratio / originalRatio
@@ -364,8 +368,10 @@ open class ZLEditImageViewController: UIViewController {
             path?.addLine(to: point)
             drawAllLines()
         } else if pan.state == .cancelled || pan.state == .ended {
+            isDrawing = false
             undoBtn.isEnabled = !drawPaths.isEmpty
             redoBtn.isEnabled = false
+            zoomerImageView.fadeOut()
         }
     }
 
@@ -409,17 +415,20 @@ open class ZLEditImageViewController: UIViewController {
 
     func drawZoomerImageView() {
         // Create a blank bitmap context of size zoomerWindowWidth x zoomerWindowWidth.
-        UIGraphicsBeginImageContextWithOptions(CGSize(width: zoomerWindowWidth, height: zoomerWindowWidth), false, 0)
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: zoomerWindowDiameter, height: zoomerWindowDiameter), false, 0)
         // Since lastPointTouched is relative to drawingImageView, we must convert it to be relative to the view.
         lastPointTouched = view.convert(lastPointTouched, from: drawingImageView)
-
         // Create a rect the size of the entire view, but shifted so the desired content is in the top-left corner.
-        let cropRect = CGRect(x: -(lastPointTouched.x - zoomerWindowWidth / 2), y: -(lastPointTouched.y - zoomerWindowWidth / 2), width: view.bounds.size.width, height: view.bounds.size.height)
+        let cropRect = CGRect(x: -(lastPointTouched.x - zoomerWindowDiameter / 2), y: -(lastPointTouched.y - zoomerWindowDiameter / 2), width: view.bounds.size.width, height: view.bounds.size.height)
         // Draw mainScrollView to the blank bitmap context. This draws just the desired content to the bitmap and discards the rest.
         mainScrollView.drawHierarchy(in: cropRect, afterScreenUpdates: true)
         // Fetch bitmap from context.
         zoomerImageView.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
+
+        if (zoomerImageView.isHidden) {
+            zoomerImageView.fadeIn()
+        }
     }
 
 
