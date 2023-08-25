@@ -38,6 +38,8 @@ open class ZLEditImageViewController: UIViewController {
 
     var lastPointTouched = CGPoint()
 
+    var zoomerMargin: CGFloat = 60
+
     lazy var zoomerWindowDiameter: CGFloat = {
         view.frame.width / 3
     }()
@@ -116,7 +118,7 @@ open class ZLEditImageViewController: UIViewController {
     }()
 
     open lazy var zoomerImageView: UIImageView = {
-        let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 3), y: 60, width: view.frame.width / 3, height: view.frame.width / 3))
+        let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 3), y: zoomerMargin, width: view.frame.width / 3, height: view.frame.width / 3))
         zoomerView.backgroundColor = .gray
         zoomerView.layer.borderWidth = 5.0
         zoomerView.layer.masksToBounds = false
@@ -340,7 +342,8 @@ open class ZLEditImageViewController: UIViewController {
 
     @objc func drawAction(_ pan: UIPanGestureRecognizer) {
         let point = pan.location(in: drawingImageView)
-        lastPointTouched = point
+        // Since point is relative to drawingImageView, we must convert it to be relative to the view.
+        lastPointTouched = view.convert(point, from: drawingImageView)
 
         if pan.state == .began {
             isDrawing = true
@@ -371,7 +374,7 @@ open class ZLEditImageViewController: UIViewController {
             isDrawing = false
             undoBtn.isEnabled = !drawPaths.isEmpty
             redoBtn.isEnabled = false
-            zoomerImageView.fadeOut()
+            zoomerImageView.isHidden = true
         }
     }
 
@@ -416,8 +419,6 @@ open class ZLEditImageViewController: UIViewController {
     func drawZoomerImageView() {
         // Create a blank bitmap context of size zoomerWindowWidth x zoomerWindowWidth.
         UIGraphicsBeginImageContextWithOptions(CGSize(width: zoomerWindowDiameter, height: zoomerWindowDiameter), false, 0)
-        // Since lastPointTouched is relative to drawingImageView, we must convert it to be relative to the view.
-        lastPointTouched = view.convert(lastPointTouched, from: drawingImageView)
         // Create a rect the size of the entire view, but shifted so the desired content is in the top-left corner.
         let cropRect = CGRect(x: -(lastPointTouched.x - zoomerWindowDiameter / 2), y: -(lastPointTouched.y - zoomerWindowDiameter / 2), width: view.bounds.size.width, height: view.bounds.size.height)
         // Draw mainScrollView to the blank bitmap context. This draws just the desired content to the bitmap and discards the rest.
@@ -427,7 +428,24 @@ open class ZLEditImageViewController: UIViewController {
         UIGraphicsEndImageContext()
 
         if (zoomerImageView.isHidden) {
-            zoomerImageView.fadeIn()
+            // Zoomer is not initially visible, so set it visible in the opposite "hemisphere" to what was touched.
+            if (lastPointTouched.y > view.frame.height / 2) {
+                zoomerImageView.frame = CGRect(x: (view.frame.width / 3), y: zoomerMargin, width: view.frame.width / 3, height: view.frame.width / 3)
+            } else {
+                zoomerImageView.frame = CGRect(x: (view.frame.width / 3), y: view.frame.height - zoomerWindowDiameter - zoomerMargin, width: view.frame.width / 3, height: view.frame.width / 3)
+            }
+        } else {
+            // Zoomer was already visible, so only change its "hemisphere" if user's touch crosses certain thresholds.
+            let touchDistanceFromZoomer = abs(hypot(lastPointTouched.x - (zoomerImageView.frame.origin.x + zoomerWindowDiameter / 2), lastPointTouched.y - (zoomerImageView.frame.origin.y + zoomerWindowDiameter / 2)))
+            if (lastPointTouched.y <= zoomerWindowDiameter * 1.5 + zoomerMargin) {
+                zoomerImageView.frame = CGRect(x: (view.frame.width / 3), y: view.frame.height - zoomerWindowDiameter - zoomerMargin, width: view.frame.width / 3, height: view.frame.width / 3)
+            } else if (lastPointTouched.y >= view.frame.height - (zoomerWindowDiameter * 1.5) - zoomerMargin || (lastPointTouched.y >= view.frame.height / 2 && touchDistanceFromZoomer <= zoomerWindowDiameter * 1.5)) {
+                zoomerImageView.frame = CGRect(x: (view.frame.width / 3), y: zoomerMargin, width: view.frame.width / 3, height: view.frame.width / 3)
+            }
+        }
+
+        if (zoomerImageView.isHidden) {
+            zoomerImageView.isHidden = false
         }
     }
 

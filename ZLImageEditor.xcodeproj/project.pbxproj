@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */; };
 		2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */; };
-		2C6A997DB035C97D1E0F0C74 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A95A71F1781EFE8A9514B /* UIView+Extensions.swift */; };
 		2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */; };
 		C815100A101D3802AD7437A6 /* Pods_ZLImageEditor.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D56CE10BD95974A17470E55 /* Pods_ZLImageEditor.framework */; };
 		E40208DC256B9BA60077F5DC /* ZLImageEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = E40208DA256B9BA60077F5DC /* ZLImageEditor.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -18,7 +17,6 @@
 
 /* Begin PBXFileReference section */
 		1D56CE10BD95974A17470E55 /* Pods_ZLImageEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ZLImageEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2C6A95A71F1781EFE8A9514B /* UIView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+ZLImageEditor.swift"; sourceTree = "<group>"; };
 		2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZLImageEditor.swift; sourceTree = "<group>"; };
@@ -86,7 +84,6 @@
 				2C6A9DCB4C84A0461F47F770 /* UIView+ZLImageEditor.swift */,
 				2C6A9E1246F59309CF40651B /* ZLImageEditor.swift */,
 				2C6A9D2BD90769F1B43C0AEB /* UIImage+ZLImageEditor.swift */,
-				2C6A95A71F1781EFE8A9514B /* UIView+Extensions.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -208,7 +205,6 @@
 				2C6A95B3A81A6CCAB8B0BAF9 /* UIView+ZLImageEditor.swift in Sources */,
 				2C6A96747401008CA9BFFC4C /* ZLImageEditor.swift in Sources */,
 				2C6A9B9DA975240022348BF9 /* UIImage+ZLImageEditor.swift in Sources */,
-				2C6A997DB035C97D1E0F0C74 /* UIView+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
