@@ -119,7 +119,7 @@ open class ZLEditImageViewController: UIViewController {
 
     open lazy var zoomerImageView: UIImageView = {
         let zoomerView = UIImageView(frame: CGRect(x: (view.frame.width / 3), y: zoomerMargin, width: view.frame.width / 3, height: view.frame.width / 3))
-        zoomerView.backgroundColor = .gray
+        zoomerView.backgroundColor = .black
         zoomerView.layer.borderWidth = 5.0
         zoomerView.layer.masksToBounds = false
         zoomerView.layer.borderColor = UIColor.lightGray.cgColor
@@ -133,11 +133,11 @@ open class ZLEditImageViewController: UIViewController {
     @objc public var editFinishBlock: ((UIImage, ZLEditImageModel?) -> Void)?
 
     override open var prefersStatusBarHidden: Bool {
-        return true
+        true
     }
 
     override open var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
+        .portrait
     }
 
 
@@ -177,7 +177,7 @@ open class ZLEditImageViewController: UIViewController {
 
         shouldLayout = false
         var insets = UIEdgeInsets.zero
-        insets = self.view.safeAreaInsets
+        insets = view.safeAreaInsets
 
         mainScrollView.frame = view.bounds
 
@@ -211,7 +211,6 @@ open class ZLEditImageViewController: UIViewController {
         let h = ratio * editSize.height * mainScrollView.zoomScale
         containerView.frame = CGRect(x: max(0, (scrollViewSize.width - w) / 2), y: max(0, (scrollViewSize.height - h) / 2), width: w, height: h)
         mainScrollView.contentSize = containerView.frame.size
-
         containerView.layer.mask = nil
 
         let scaleImageOrigin = CGPoint(x: -editRect.origin.x * ratio, y: -editRect.origin.y * ratio)
@@ -384,7 +383,7 @@ open class ZLEditImageViewController: UIViewController {
         let originalRatio = min(mainScrollView.frame.width / originalImage.size.width, mainScrollView.frame.height / originalImage.size.height)
         let ratio = min(mainScrollView.frame.width / editRect.width, mainScrollView.frame.height / editRect.height)
         let scale = ratio / originalRatio
-        // Zoom to original size
+        // Zoom to original size.
         var size = drawingImageView.frame.size
         size.width /= scale
         size.height /= scale
@@ -408,8 +407,7 @@ open class ZLEditImageViewController: UIViewController {
             path.drawPath()
         }
 
-        let fullImage = UIGraphicsGetImageFromCurrentImageContext()
-        drawingImageView.image = fullImage
+        drawingImageView.image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
 
         drawZoomerImageView()
@@ -444,7 +442,7 @@ open class ZLEditImageViewController: UIViewController {
             }
         }
 
-        if (zoomerImageView.isHidden) {
+        if (zoomerImageView.isHidden && isDrawing) {
             zoomerImageView.isHidden = false
         }
     }
@@ -486,7 +484,7 @@ extension ZLEditImageViewController: UIGestureRecognizerDelegate {
 // MARK: scroll view delegate
 extension ZLEditImageViewController: UIScrollViewDelegate {
     public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return containerView
+        containerView
     }
 
     public func scrollViewDidZoom(_ scrollView: UIScrollView) {
