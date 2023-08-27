@@ -145,7 +145,7 @@ open class ZLEditImageViewController: UIViewController {
     }
 
     @objc public init(image: UIImage, editModel: ZLEditImageModel? = nil) {
-        originalImage = image.zl.fixOrientation()
+        originalImage = image
         editedImage = originalImage
         editRect = editModel?.editRect ?? CGRect(origin: .zero, size: image.size)
         drawPaths = editModel?.drawPaths ?? []
@@ -185,8 +185,6 @@ open class ZLEditImageViewController: UIViewController {
         panGestureRecognizer.delegate = self
         view.addGestureRecognizer(panGestureRecognizer)
         mainScrollView.panGestureRecognizer.require(toFail: panGestureRecognizer)
-
-        rotateImageView()
     }
 
     override open func viewDidLayoutSubviews() {
@@ -198,7 +196,7 @@ open class ZLEditImageViewController: UIViewController {
         resetContainerViewFrame()
 
         let insets = view.safeAreaInsets
-        topToolbarView.frame = CGRect(x: 0, y: 0, width: view.zl.width, height: 100 + insets.top)
+        topToolbarView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 100 + insets.top)
         brushSizeButton.frame = CGRect(x: view.frame.width - 8 - 48, y: insets.top + 8, width: 48, height: 48)
         redoButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
         undoButton.frame = CGRect(x: view.frame.width - 12 - 48 - 48 - 48, y: insets.top + 8, width: 48, height: 48)
@@ -245,13 +243,6 @@ open class ZLEditImageViewController: UIViewController {
         }
 
         isScrolling = false
-    }
-
-
-    func rotateImageView() {
-        let transform = CGAffineTransform(rotationAngle: angle.zl.base / 180 * .pi)
-        imageView.transform = transform
-        drawingImageView.transform = transform
     }
 
 

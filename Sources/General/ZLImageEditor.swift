@@ -1,3 +1,4 @@
+/*
 import UIKit
 
 public struct ZLImageEditorWrapper<Base> {
@@ -38,3 +39,4 @@ extension UIView: ZLImageEditorCompatible { }
 
 extension String: ZLImageEditorCompatibleValue { }
 extension CGFloat: ZLImageEditorCompatibleValue { }
+*/
